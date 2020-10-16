@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+
+  
+  
+  <meta name="description" content="Log4j 1.x版本高并发情况下引发BLOCKED死..."> 
+  
+  <meta name="author" content="John Doe"> 
+
+  
+    <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  
+  
+    <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  
+  
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  
+  
+    <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_h1619vhl1nr.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css">
+
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        loadingImage: '/images/theme/loading.gif',
+      },
+      donate: {
+        enable: false,
+        alipay: '',
+        wechat: ''
+      },
+      motto: {
+        api: '',
+        default: '夜半花落听雨声，不自欢喜不自愁。'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        alwaysShow: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: true
+      }
+    }
+  </script>
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+<body class="lock-screen">
+  <div class="loading"></div>
+  
+
+
+<nav class="navbar">
+  <div class="left"></div>
+  <div class="center">Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题</div>
+  <div class="right">
+    <i class="iconfont iconmenu j-navbar-menu"></i>
+  </div>
+</nav>
+
+  <nav class="menu">
+  <div class="menu-wrap">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content">
+      
+      
+      
+      
+      <li class="menu-item"><a href="/ " class="underline"> 首页</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/galleries " class="underline"> 摄影</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/archives " class="underline"> 归档</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/tags " class="underline"> 标签</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/categories " class="underline"> 分类</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/about " class="underline"> 关于</a></li>
+      
+    </ul>
+    <div class="menu-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://junanaa.gitee.io/">JinPeng Wang</a> .AllRightsReserved</p></div>
+  </div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>October 16, 2020</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>14664</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        <h2 id="Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题"><a href="#Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题" class="headerlink" title="Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题"></a>Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题</h2><h5 id="应用系统使用Apache-log4j-1-2-16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁："><a href="#应用系统使用Apache-log4j-1-2-16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：" class="headerlink" title="应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁："></a>应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">"http-processor732" #79018 daemon prio=5 os_prio=0 tid=0x000000001b26c000 nid=0x2c64 waiting for monitor entry [0x0000000059c3d000]</span><br><span class="line">   java.lang.Thread.State: BLOCKED (on object monitor)</span><br><span class="line">	at org.apache.log4j.Category.callAppenders(Category.java:<span class="number">204</span>)</span><br><span class="line">	- waiting to lock &lt;<span class="number">0x00000007209cfa80</span>&gt; (a org.apache.log4j.Logger)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.logging.CCBULogger.callAppendersDirect(CCBULogger.java:<span class="number">210</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.logging.CCBULogger.forcedCCBUTrace(CCBULogger.java:<span class="number">167</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.ServiceabilityManager.trace(ServiceabilityManager.java:<span class="number">2360</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.ServiceabilityManager.trace(ServiceabilityManager.java:<span class="number">2461</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.ServiceabilityManager.trace(ServiceabilityManager.java:<span class="number">2446</span>)</span><br><span class="line">	at com.audium.core.serviceability.SvcMgrUtil.trace(SvcMgrUtil.java:<span class="number">110</span>)</span><br><span class="line">	at com.audium.server.controller.Controller.newCall(Controller.java:<span class="number">1697</span>)</span><br><span class="line">	at com.audium.server.controller.Controller.doPost(Controller.java:<span class="number">1002</span>)</span><br><span class="line">	at com.audium.server.controller.Controller.doGet(Controller.java:<span class="number">546</span>)</span><br><span class="line">	at javax.servlet.http.HttpServlet.service(HttpServlet.java:<span class="number">634</span>)</span><br><span class="line">	at javax.servlet.http.HttpServlet.service(HttpServlet.java:<span class="number">741</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:<span class="number">231</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:<span class="number">166</span>)</span><br><span class="line">	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:<span class="number">53</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:<span class="number">193</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:<span class="number">166</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:<span class="number">199</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:<span class="number">96</span>)</span><br><span class="line">	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:<span class="number">494</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:<span class="number">139</span>)</span><br><span class="line">	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:<span class="number">92</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:<span class="number">87</span>)</span><br><span class="line">	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:<span class="number">343</span>)</span><br><span class="line">	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:<span class="number">412</span>)</span><br><span class="line">	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:<span class="number">66</span>)</span><br><span class="line">	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:<span class="number">754</span>)</span><br><span class="line">	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:<span class="number">1385</span>)</span><br><span class="line">	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:<span class="number">49</span>)</span><br><span class="line">	- locked &lt;<span class="number">0x00000007292e6cc0</span>&gt; (a org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:<span class="number">1149</span>)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:<span class="number">624</span>)</span><br><span class="line">	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:<span class="number">61</span>)</span><br><span class="line">	at java.lang.Thread.run(Thread.java:<span class="number">748</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="查看引发死锁线程如下："><a href="#查看引发死锁线程如下：" class="headerlink" title="查看引发死锁线程如下："></a>查看引发死锁线程如下：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">"http-processor161" #78384 daemon prio=5 os_prio=0 tid=0x0000000041dad000 nid=0x3bf8 runnable [0x000000005cc3c000]</span><br><span class="line">   java.lang.Thread.State: RUNNABLE</span><br><span class="line">	at sun.util.locale.provider.LocaleProviderAdapter.isSupportedLocale(LocaleProviderAdapter.java:<span class="number">299</span>)</span><br><span class="line">	at sun.util.resources.LocaleData$LocaleDataResourceBundleControl.getCandidateLocales(LocaleData.java:<span class="number">218</span>)</span><br><span class="line">	at java.util.ResourceBundle.getBundleImpl(ResourceBundle.java:<span class="number">1365</span>)</span><br><span class="line">	at java.util.ResourceBundle.getBundle(ResourceBundle.java:<span class="number">899</span>)</span><br><span class="line">	at sun.util.resources.LocaleData$<span class="number">1</span>.run(LocaleData.java:<span class="number">167</span>)</span><br><span class="line">	at sun.util.resources.LocaleData$<span class="number">1</span>.run(LocaleData.java:<span class="number">163</span>)</span><br><span class="line">	at java.security.AccessController.doPrivileged(Native Method)</span><br><span class="line">	at sun.util.resources.LocaleData.getBundle(LocaleData.java:<span class="number">163</span>)</span><br><span class="line">	at sun.util.resources.LocaleData.getDateFormatData(LocaleData.java:<span class="number">127</span>)</span><br><span class="line">	at java.text.DateFormatSymbols.initializeData(DateFormatSymbols.java:<span class="number">710</span>)</span><br><span class="line">	at java.text.DateFormatSymbols.&lt;init&gt;(DateFormatSymbols.java:<span class="number">145</span>)</span><br><span class="line">	at sun.util.locale.provider.DateFormatSymbolsProviderImpl.getInstance(DateFormatSymbolsProviderImpl.java:<span class="number">85</span>)</span><br><span class="line">	at java.text.DateFormatSymbols.getProviderInstance(DateFormatSymbols.java:<span class="number">364</span>)</span><br><span class="line">	at java.text.DateFormatSymbols.getInstance(DateFormatSymbols.java:<span class="number">340</span>)</span><br><span class="line">	at java.util.Calendar.getDisplayName(Calendar.java:<span class="number">2110</span>)</span><br><span class="line">	at java.text.SimpleDateFormat.subFormat(SimpleDateFormat.java:<span class="number">1125</span>)</span><br><span class="line">	at java.text.SimpleDateFormat.format(SimpleDateFormat.java:<span class="number">966</span>)</span><br><span class="line">	at java.text.SimpleDateFormat.format(SimpleDateFormat.java:<span class="number">936</span>)</span><br><span class="line">	at java.text.DateFormat.format(DateFormat.java:<span class="number">345</span>)</span><br><span class="line">	at org.apache.log4j.helpers.PatternParser$DatePatternConverter.convert(PatternParser.java:<span class="number">443</span>)</span><br><span class="line">	at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:<span class="number">65</span>)</span><br><span class="line">	at org.apache.log4j.PatternLayout.format(PatternLayout.java:<span class="number">506</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.logging.CCBUSyslogAppender.append(CCBUSyslogAppender.java:<span class="number">247</span>)</span><br><span class="line">	at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:<span class="number">251</span>)</span><br><span class="line">	- locked &lt;<span class="number">0x00000007212a16d8</span>&gt; (a com.cisco.ccbu.infra.serviceability.logging.CCBUSyslogAppender)</span><br><span class="line">	at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:<span class="number">66</span>)</span><br><span class="line">	at org.apache.log4j.Category.callAppenders(Category.java:<span class="number">206</span>)</span><br><span class="line">	- locked &lt;<span class="number">0x00000007209cfa80</span>&gt; (a org.apache.log4j.Logger)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.logging.CCBULogger.callAppendersDirect(CCBULogger.java:<span class="number">210</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.logging.CCBULogger.forcedCCBULog(CCBULogger.java:<span class="number">153</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.ServiceabilityManager.log(ServiceabilityManager.java:<span class="number">2222</span>)</span><br><span class="line">	at com.cisco.ccbu.infra.serviceability.ServiceabilityManager.info(ServiceabilityManager.java:<span class="number">2706</span>)</span><br><span class="line">	at com.audium.server.controller.Controller.doPost(Controller.java:<span class="number">750</span>)</span><br><span class="line">	at com.audium.server.controller.Controller.doGet(Controller.java:<span class="number">546</span>)</span><br><span class="line">	at javax.servlet.http.HttpServlet.service(HttpServlet.java:<span class="number">634</span>)</span><br><span class="line">	at javax.servlet.http.HttpServlet.service(HttpServlet.java:<span class="number">741</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:<span class="number">231</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:<span class="number">166</span>)</span><br><span class="line">	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:<span class="number">53</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:<span class="number">193</span>)</span><br><span class="line">	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:<span class="number">166</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:<span class="number">199</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:<span class="number">96</span>)</span><br><span class="line">	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:<span class="number">494</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:<span class="number">139</span>)</span><br><span class="line">	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:<span class="number">92</span>)</span><br><span class="line">	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:<span class="number">87</span>)</span><br><span class="line">	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:<span class="number">343</span>)</span><br><span class="line">	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:<span class="number">412</span>)</span><br><span class="line">	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:<span class="number">66</span>)</span><br><span class="line">	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:<span class="number">754</span>)</span><br><span class="line">	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:<span class="number">1385</span>)</span><br><span class="line">	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:<span class="number">49</span>)</span><br><span class="line">	- locked &lt;<span class="number">0x0000000728e76c80</span>&gt; (a org.apache.tomcat.util.net.NioEndpoint$NioSocketWrapper)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:<span class="number">1149</span>)</span><br><span class="line">	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:<span class="number">624</span>)</span><br><span class="line">	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:<span class="number">61</span>)</span><br><span class="line">	at java.lang.Thread.run(Thread.java:<span class="number">748</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="通过日志可以大致看出问题是出在org-apache-log4j-Category-callAppenders方法中："><a href="#通过日志可以大致看出问题是出在org-apache-log4j-Category-callAppenders方法中：" class="headerlink" title="通过日志可以大致看出问题是出在org.apache.log4j.Category.callAppenders方法中："></a>通过日志可以大致看出问题是出在org.apache.log4j.Category.callAppenders方法中：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">callAppenders</span><span class="params">(LoggingEvent event)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> writes = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Category c = <span class="keyword">this</span>; c != <span class="keyword">null</span>; c = c.parent)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">synchronized</span> (c) &#123;</span><br><span class="line">        <span class="keyword">if</span> (c.aai != <span class="keyword">null</span>) &#123;</span><br><span class="line">          writes += c.aai.appendLoopOnAppenders(event);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!c.additive) &#123;</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (writes == <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">this</span>.repository.emitNoAppenderWarning(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="代码中可以看到该方法中使用了synchronized，synchronized是一个重量级锁，它会降低程序性能，被synchronized关键字声明的对象和代码块被视为临界区，当某个线程调用该对象的synchronized方法或者代码块时，便获取了该对象的锁，其他线程若要访问则需要等待，该方法中使用了appendLoopOnAppenders-event-方法："><a href="#代码中可以看到该方法中使用了synchronized，synchronized是一个重量级锁，它会降低程序性能，被synchronized关键字声明的对象和代码块被视为临界区，当某个线程调用该对象的synchronized方法或者代码块时，便获取了该对象的锁，其他线程若要访问则需要等待，该方法中使用了appendLoopOnAppenders-event-方法：" class="headerlink" title="代码中可以看到该方法中使用了synchronized，synchronized是一个重量级锁，它会降低程序性能，被synchronized关键字声明的对象和代码块被视为临界区，当某个线程调用该对象的synchronized方法或者代码块时，便获取了该对象的锁，其他线程若要访问则需要等待，该方法中使用了appendLoopOnAppenders(event)方法："></a>代码中可以看到该方法中使用了synchronized，synchronized是一个重量级锁，它会降低程序性能，被synchronized关键字声明的对象和代码块被视为临界区，当某个线程调用该对象的synchronized方法或者代码块时，便获取了该对象的锁，其他线程若要访问则需要等待，该方法中使用了appendLoopOnAppenders(event)方法：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">appendLoopOnAppenders</span><span class="params">(LoggingEvent event)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.appenderList != <span class="keyword">null</span>) &#123;</span><br><span class="line">    size = <span class="keyword">this</span>.appenderList.size();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++) &#123;</span><br><span class="line">      Appender appender = (Appender)<span class="keyword">this</span>.appenderList.elementAt(i);</span><br><span class="line">      appender.doAppend(event);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> size;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="在该方法中，调用了doAppend-event-方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口："><a href="#在该方法中，调用了doAppend-event-方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口：" class="headerlink" title="在该方法中，调用了doAppend(event)方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口："></a>在该方法中，调用了doAppend(event)方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">doAppend</span><span class="params">(LoggingEvent event)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.closed) &#123;</span><br><span class="line">    LogLog.error(<span class="string">"Attempted to append to closed appender named ["</span> + <span class="keyword">this</span>.name + <span class="string">"]."</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!isAsSevereAsThreshold(event.getLevel())) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Filter f = <span class="keyword">this</span>.headFilter;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (f != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">switch</span> (f.decide(event)) &#123; <span class="keyword">case</span> -<span class="number">1</span>:</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">      f = f.getNext();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。"><a href="#doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。" class="headerlink" title="doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。"></a>doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。</h5><h5 id="此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j-2-x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑："><a href="#此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j-2-x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑：" class="headerlink" title="此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j 2.x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑："></a>此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j 2.x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑：</h5><ol>
+<li><h5 id="尽量输出有效日志，减少无用日志的输出。"><a href="#尽量输出有效日志，减少无用日志的输出。" class="headerlink" title="尽量输出有效日志，减少无用日志的输出。"></a>尽量输出有效日志，减少无用日志的输出。</h5></li>
+<li><h5 id="调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。"><a href="#调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。" class="headerlink" title="调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。"></a>调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。</h5></li>
+<li><h5 id="条件允许的情况下升级log4j版本。"><a href="#条件允许的情况下升级log4j版本。" class="headerlink" title="条件允许的情况下升级log4j版本。"></a>条件允许的情况下升级log4j版本。</h5></li>
+</ol>
+<h5 id="在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下："><a href="#在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下：" class="headerlink" title="在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下："></a>在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下：</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">class</span>=<span class="string">"com.primeton.ext.common.logging.AppRollingFileAppender"</span> <span class="attr">name</span>=<span class="string">"ROLLING_FILE_BS"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">&lt;!--&lt;param name="Threshold" value="INFO"/&gt;--&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"Encoding"</span> <span class="attr">value</span>=<span class="string">"UTF-8"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"File"</span> <span class="attr">value</span>=<span class="string">"logs/bs.log"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"Append"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"MaxFileSize"</span> <span class="attr">value</span>=<span class="string">"10MB"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"MaxBackupIndex"</span> <span class="attr">value</span>=<span class="string">"200"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">layout</span> <span class="attr">class</span>=<span class="string">"org.apache.log4j.PatternLayout"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"ConversionPattern"</span> <span class="attr">value</span>=<span class="string">"[%d&#123;yyyy-MM-dd HH:mm:ss,SSS&#125;][%p][%C:%L] %m%n"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;/<span class="name">layout</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"ROLLING_FILE_BS_SYN"</span> <span class="attr">class</span>=<span class="string">"org.apache.log4j.AsyncAppender"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"BufferSize"</span> <span class="attr">value</span>=<span class="string">"8192"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">"LocationInfo"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"ROLLING_FILE_BS"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>==<param name="LocationInfo" value="true">==</p>
+<h5 id="该配置作用是输出java文件名称和行号，默认为false。"><a href="#该配置作用是输出java文件名称和行号，默认为false。" class="headerlink" title="该配置作用是输出java文件名称和行号，默认为false。"></a>该配置作用是输出java文件名称和行号，默认为false。</h5><h5 id="在jar包中定位LocationInfo类的代码如下："><a href="#在jar包中定位LocationInfo类的代码如下：" class="headerlink" title="在jar包中定位LocationInfo类的代码如下："></a>在jar包中定位LocationInfo类的代码如下：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LocationInfo</span><span class="params">(Throwable t, String fqnOfCallingClass)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ((t == <span class="keyword">null</span>) || (fqnOfCallingClass == <span class="keyword">null</span>))</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (getLineNumberMethod != <span class="keyword">null</span>)</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        Object[] noArgs = <span class="keyword">null</span>;</span><br><span class="line">        Object[] elements = (Object[])(Object[])getStackTraceMethod.invoke(t, noArgs);</span><br><span class="line">        String prevClass = <span class="string">"?"</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = elements.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">          String thisClass = (String)getClassNameMethod.invoke(elements[i], noArgs);</span><br><span class="line">          <span class="keyword">if</span> (fqnOfCallingClass.equals(thisClass)) &#123;</span><br><span class="line">            <span class="keyword">int</span> caller = i + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (caller &lt; elements.length) &#123;</span><br><span class="line">              <span class="keyword">this</span>.className = prevClass;</span><br><span class="line">              <span class="keyword">this</span>.methodName = ((String)getMethodNameMethod.invoke(elements[caller], noArgs));</span><br><span class="line">              <span class="keyword">this</span>.fileName = ((String)getFileNameMethod.invoke(elements[caller], noArgs));</span><br><span class="line">              <span class="keyword">if</span> (<span class="keyword">this</span>.fileName == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">this</span>.fileName = <span class="string">"?"</span>;</span><br><span class="line">              &#125;</span><br><span class="line">              <span class="keyword">int</span> line = ((Integer)getLineNumberMethod.invoke(elements[caller], noArgs)).intValue();</span><br><span class="line">              <span class="keyword">if</span> (line &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">this</span>.lineNumber = <span class="string">"?"</span>;</span><br><span class="line">              <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.lineNumber = String.valueOf(line);</span><br><span class="line">              &#125;</span><br><span class="line">              StringBuffer buf = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">              buf.append(<span class="keyword">this</span>.className);</span><br><span class="line">              buf.append(<span class="string">"."</span>);</span><br><span class="line">              buf.append(<span class="keyword">this</span>.methodName);</span><br><span class="line">              buf.append(<span class="string">"("</span>);</span><br><span class="line">              buf.append(<span class="keyword">this</span>.fileName);</span><br><span class="line">              buf.append(<span class="string">":"</span>);</span><br><span class="line">              buf.append(<span class="keyword">this</span>.lineNumber);</span><br><span class="line">              buf.append(<span class="string">")"</span>);</span><br><span class="line">              <span class="keyword">this</span>.fullInfo = buf.toString();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">          &#125;</span><br><span class="line">          prevClass = thisClass;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (IllegalAccessException ex) &#123;</span><br><span class="line">        LogLog.debug(<span class="string">"LocationInfo failed using JDK 1.4 methods"</span>, ex);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InvocationTargetException ex) &#123;</span><br><span class="line">        <span class="keyword">if</span> (((ex.getTargetException() <span class="keyword">instanceof</span> InterruptedException)) || ((ex.getTargetException() <span class="keyword">instanceof</span> InterruptedIOException)))</span><br><span class="line">        &#123;</span><br><span class="line">          Thread.currentThread().interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">        LogLog.debug(<span class="string">"LocationInfo failed using JDK 1.4 methods"</span>, ex);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (RuntimeException ex) &#123;</span><br><span class="line">        LogLog.debug(<span class="string">"LocationInfo failed using JDK 1.4 methods"</span>, ex);</span><br><span class="line">      &#125;</span><br><span class="line">    String s;</span><br><span class="line">    <span class="keyword">synchronized</span> (sw) &#123;</span><br><span class="line">      t.printStackTrace(pw);</span><br><span class="line">      s = sw.toString();</span><br><span class="line">      sw.getBuffer().setLength(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> ibegin = s.lastIndexOf(fqnOfCallingClass);</span><br><span class="line">    <span class="keyword">if</span> (ibegin == -<span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((ibegin + fqnOfCallingClass.length() &lt; s.length()) &amp;&amp; (s.charAt(ibegin + fqnOfCallingClass.length()) != <span class="string">'.'</span>))</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">int</span> i = s.lastIndexOf(fqnOfCallingClass + <span class="string">"."</span>);</span><br><span class="line">      <span class="keyword">if</span> (i != -<span class="number">1</span>) &#123;</span><br><span class="line">        ibegin = i;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ibegin = s.indexOf(Layout.LINE_SEP, ibegin);</span><br><span class="line">    <span class="keyword">if</span> (ibegin == -<span class="number">1</span>)</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    ibegin += Layout.LINE_SEP_LEN;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> iend = s.indexOf(Layout.LINE_SEP, ibegin);</span><br><span class="line">    <span class="keyword">if</span> (iend == -<span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!inVisualAge)</span><br><span class="line">    &#123;</span><br><span class="line">      ibegin = s.lastIndexOf(<span class="string">"at "</span>, iend);</span><br><span class="line">      <span class="keyword">if</span> (ibegin == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      ibegin += <span class="number">3</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.fullInfo = s.substring(ibegin, iend);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题"><a href="#可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题" class="headerlink" title="可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题"></a>可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">String s;</span><br><span class="line"><span class="keyword">synchronized</span> (sw) &#123;</span><br><span class="line">  t.printStackTrace(pw);</span><br><span class="line">  s = sw.toString();</span><br><span class="line">  sw.getBuffer().setLength(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="因此在ConversionPattern配置中将-L去掉，先后测试的数据如下："><a href="#因此在ConversionPattern配置中将-L去掉，先后测试的数据如下：" class="headerlink" title="因此在ConversionPattern配置中将%L去掉，先后测试的数据如下："></a>因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：</h5><p><img class="lazyload" data-original=".%5CLog4j%E6%AD%BB%E9%94%81%5Cpic1.png" src="/2020/10/16/Log4j%201.x%E7%89%88%E6%9C%AC%E9%AB%98%E5%B9%B6%E5%8F%91%E6%83%85%E5%86%B5%E4%B8%8B%E5%BC%95%E5%8F%91BLOCKED%E6%AD%BB%E9%94%81%E7%9A%84%E9%97%AE%E9%A2%98/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="1602750631752"></p>
+<p><img class="lazyload" data-original=".%5CLog4j%E6%AD%BB%E9%94%81%5Cpic2.png" src="/2020/10/16/Log4j%201.x%E7%89%88%E6%9C%AC%E9%AB%98%E5%B9%B6%E5%8F%91%E6%83%85%E5%86%B5%E4%B8%8B%E5%BC%95%E5%8F%91BLOCKED%E6%AD%BB%E9%94%81%E7%9A%84%E9%97%AE%E9%A2%98/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="1602750656643"></p>
+<h5 id="测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。"><a href="#测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。" class="headerlink" title="测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。"></a>测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。</h5>
+      </section>
+      <section class="extra">
+        
+        
+        
+        
+<nav class="nav">
+  
+  
+    <a href="/2020/05/12/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/">Redis缓存穿透<i class="iconfont iconright"></i></a>
+  
+</nav>
+
+      </section>
+      
+      <section class="comments">
+  
+  <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "a8aBoMUoOnc1VQB8luHmCH4Y-gzGzoHsz",
+        app_key: "EEUcoQEF0g8aC9y8tqj1koxE",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="tencent://message/?Menu=yes&uin=784118046 " target="_blank" onMouseOver="this.style.color= '#12B7F5'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconQQ "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="javascript:; " target="_blank" onMouseOver="this.style.color= '#09BB07'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconwechat-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="mailto:784118046@qq.com " target="_blank" onMouseOver="this.style.color='#FFBE5B'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconmail"></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://junanaa.gitee.io/">JinPeng Wang</a> .AllRightsReserved</p></div>
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  <div class="fab fab-daovoice">
+    <i class="iconfont iconcomment"></i>
+  </div>
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/modules.js"></script>
+<script src="/js/zui.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["DaoVoiceObject"] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    a.charset = "utf-8";
+    m.parentNode.insertBefore(a, m)
+  })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+    "//widget.daovoice.io/widget/0f81ff2f.js", "daovoice")
+  daovoice('init', {
+    app_id: "abcdefg"
+  }, {
+    launcher: {
+      disableLauncherIcon: true,
+    },
+  });
+  daovoice('update');
+</script>
+
+
+
+<script>
+  (function () {
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    } else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?4c204d8bc027a0455b5fc642ac334ca8";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+</html>
