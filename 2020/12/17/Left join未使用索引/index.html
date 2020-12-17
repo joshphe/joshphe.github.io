@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Left join未使用索引 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+
+  
+  
+  <meta name="description" content="Left join未使用索引​    先上SQL语句：..."> 
+  
+  <meta name="author" content="John Doe"> 
+
+  
+    <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  
+  
+    <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  
+  
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  
+  
+    <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_h1619vhl1nr.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css">
+
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        loadingImage: '/images/theme/loading.gif',
+      },
+      donate: {
+        enable: false,
+        alipay: '',
+        wechat: ''
+      },
+      motto: {
+        api: '',
+        default: '夜半花落听雨声，不自欢喜不自愁。'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        alwaysShow: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: true
+      }
+    }
+  </script>
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+<body class="lock-screen">
+  <div class="loading"></div>
+  
+
+
+<nav class="navbar">
+  <div class="left"></div>
+  <div class="center">Left join未使用索引</div>
+  <div class="right">
+    <i class="iconfont iconmenu j-navbar-menu"></i>
+  </div>
+</nav>
+
+  <nav class="menu">
+  <div class="menu-wrap">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content">
+      
+      
+      
+      
+      <li class="menu-item"><a href="/ " class="underline"> 首页</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/galleries " class="underline"> 摄影</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/archives " class="underline"> 归档</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/tags " class="underline"> 标签</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/categories " class="underline"> 分类</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/about " class="underline"> 关于</a></li>
+      
+    </ul>
+    <div class="menu-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://junanaa.gitee.io/">JinPeng Wang</a> .AllRightsReserved</p></div>
+  </div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">Left join未使用索引</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>December 17, 2020</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4296</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        <h4 id="Left-join未使用索引"><a href="#Left-join未使用索引" class="headerlink" title="Left join未使用索引"></a>Left join未使用索引</h4><p>​    先上SQL语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.fuhrq <span class="keyword">AS</span> fuhrq</span><br><span class="line">	,a.busiType <span class="keyword">AS</span> busiType</span><br><span class="line">	,a.zhangh <span class="keyword">AS</span> zhangh</span><br><span class="line">	,b.DOCUMENT_NUMBER <span class="keyword">AS</span> createNumber</span><br><span class="line">	,b.HUM <span class="keyword">AS</span> hum</span><br><span class="line">	,c.ORGANNAME <span class="keyword">AS</span> organname</span><br><span class="line">	,a.yinjkbh <span class="keyword">AS</span> yinjkbh</span><br><span class="line">	,a.channelId <span class="keyword">AS</span> channelId</span><br><span class="line">	,a.localSerialNum <span class="keyword">AS</span> localSerialNum</span><br><span class="line">	,a.warehousingStatus <span class="keyword">AS</span> warehousingStatus</span><br><span class="line">	,a.qiyrq <span class="keyword">AS</span> qiyrq</span><br><span class="line">	,a.ruky <span class="keyword">AS</span> ruky</span><br><span class="line"><span class="keyword">FROM</span> yinj_serial_status a</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> zhanghb b <span class="keyword">ON</span> a.zhangh = b.zhangh</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> organarchives c <span class="keyword">ON</span> a.JIGH = c.ORGANNUM</span><br><span class="line"><span class="keyword">WHERE</span> a.serialStatus = <span class="string">'6'</span></span><br><span class="line">	<span class="keyword">AND</span> a.fuhrq &gt;= <span class="string">'2020-10-01'</span></span><br><span class="line">	<span class="keyword">AND</span> a.fuhrq &lt;= <span class="string">'2020-12-16'</span></span><br><span class="line">	<span class="keyword">AND</span> a.jigh <span class="keyword">IN</span> (</span><br><span class="line">		<span class="keyword">SELECT</span> o.ORGANNUM</span><br><span class="line">		<span class="keyword">FROM</span> organarchives o</span><br><span class="line">		<span class="keyword">WHERE</span> LEVELFLAG <span class="keyword">LIKE</span> <span class="string">'6iv%'</span></span><br><span class="line">		)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> a.fuhrq <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中a表（8000+条记录）中索引信息如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">名</th>
+<th>字段</th>
+<th>索引类型</th>
+<th>索引方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">localSerialNum</td>
+<td>localSerialNum</td>
+<td>Unique</td>
+<td>BTREE</td>
+</tr>
+<tr>
+<td align="left">idx_zhangh</td>
+<td>idx_zhangh</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+<tr>
+<td align="left">idx_fuhrq</td>
+<td>idx_fuhrq</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+</tbody></table>
+<p>b表（30W+条记录）索引如下</p>
+<table>
+<thead>
+<tr>
+<th align="left">名</th>
+<th>字段</th>
+<th>索引类型</th>
+<th>索引方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">idx_document_number</td>
+<td>DOCUMENT_NUMBER</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+<tr>
+<td align="left">idx_zhangh</td>
+<td>ZHANGH</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+</tbody></table>
+<p>c表（400+条记录）索引如下</p>
+<table>
+<thead>
+<tr>
+<th align="left">名</th>
+<th>字段</th>
+<th>索引类型</th>
+<th>索引方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ORGANARCHIVES_N_PARENTNUM</td>
+<td>N_PARENTNUM</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+<tr>
+<td align="left">idx_levelflag</td>
+<td>idx_levelflag</td>
+<td>Normal</td>
+<td>BTREE</td>
+</tr>
+</tbody></table>
+<p>该SQL跑了190S依然没有将结果查询出来，查看了一下该SQL的执行计划没有使用a表的idx_zhangh索引查询，而是全表扫描：</p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/SqlPlan1.png" src="/2020/12/17/Left%20join%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p>看了一下SHOW WARNINGS</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">--WARNING! ERRORS ENCOUNTERED DURING SQL PARSING!</span></span><br><span class="line"><span class="comment">/* select#1 */</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> <span class="keyword">AS</span> <span class="string">`fuhrq`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`busiType`</span> <span class="keyword">AS</span> <span class="string">`busiType`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`zhangh`</span> <span class="keyword">AS</span> <span class="string">`zhangh`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`DOCUMENT_NUMBER`</span> <span class="keyword">AS</span> <span class="string">`createNumber`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`HUM`</span> <span class="keyword">AS</span> <span class="string">`hum`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`c`</span>.<span class="string">`ORGANNAME`</span> <span class="keyword">AS</span> <span class="string">`organname`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`yinjkbh`</span> <span class="keyword">AS</span> <span class="string">`yinjkbh`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`channelId`</span> <span class="keyword">AS</span> <span class="string">`channelId`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`localSerialNum`</span> <span class="keyword">AS</span> <span class="string">`localSerialNum`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`warehousingStatus`</span> <span class="keyword">AS</span> <span class="string">`warehousingStatus`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`qiyrq`</span> <span class="keyword">AS</span> <span class="string">`qiyrq`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`ruky`</span> <span class="keyword">AS</span> <span class="string">`ruky`</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="string">`localhost`</span>.<span class="string">`yinj_serial_status`</span> <span class="string">`a`</span> <span class="keyword">semi</span></span><br><span class="line"><span class="keyword">JOIN</span> (<span class="string">`localhost`</span>.<span class="string">`organarchives`</span> <span class="string">`o`</span>)</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="string">`localhost`</span>.<span class="string">`zhanghb`</span> <span class="string">`b`</span> <span class="keyword">ON</span> ((<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`zhangh`</span> = <span class="keyword">convert</span>(<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`ZHANGH`</span> <span class="keyword">using</span> utf8mb4)))</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="string">`localhost`</span>.<span class="string">`organarchives`</span> <span class="string">`c`</span> <span class="keyword">ON</span> ((<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`jigh`</span> = <span class="keyword">convert</span>(<span class="string">`localhost`</span>.<span class="string">`c`</span>.<span class="string">`ORGANNUM`</span> <span class="keyword">using</span> utf8mb4)))</span><br><span class="line"><span class="keyword">WHERE</span> (</span><br><span class="line">		(<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`serialStatus`</span> = <span class="string">'6'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> &gt;= <span class="string">'2020-10-01'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> &lt;= <span class="string">'2020-12-16'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`o`</span>.<span class="string">`LEVELFLAG`</span> <span class="keyword">LIKE</span> <span class="string">'6iv%'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`jigh`</span> = <span class="keyword">convert</span>(<span class="string">`localhost`</span>.<span class="string">`o`</span>.<span class="string">`ORGANNUM`</span> <span class="keyword">using</span> utf8mb4))</span><br><span class="line">		)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> <span class="keyword">DESC</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到在LEFT JOIN的ON关联条件中做了convert(<code>localhost</code>.<code>b</code>.<code>ZHANGH</code> using utf8mb4)、convert(<code>localhost</code>.<code>c</code>.<code>ORGANNUM</code> using utf8mb4)、convert(<code>localhost</code>.<code>c</code>.<code>ORGANNUM</code> using utf8mb4)分别对zhanghao、organnum做了字符集的转换，导致不适用表上的索引，而是全表扫描。</p>
+<p>看了一下几张表的字符集，发现yinj_serial_status表字段的字符集为utf8mb4、utf8mb4_general_ci，另外两张表为utf8、utf8_general_ci，当yinj_serial_status表作为渠道表时，需要将被渠道表的字符集转为utf8mb4</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SHOW FULL COLUMNS FROM yinj_serial_status;</span><br><span class="line">SHOW FULL COLUMNS FROM zhanghb;</span><br><span class="line">SHOW FULL COLUMNS FROM organarchives;</span><br></pre></td></tr></table></figure>
+
+<p>yinj_serial_status表</p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/yinj_serial_status.png" src="/2020/12/17/Left%20join%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p>zhanghb表</p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/zhanghb.png" src="/2020/12/17/Left%20join%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p>organarchives表</p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/organarchives.png" src="/2020/12/17/Left%20join%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p>修改了一下yinj_serial_status表的字符集</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> yinj_serial_status <span class="keyword">CONVERT</span> <span class="keyword">TO</span> <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci;</span><br></pre></td></tr></table></figure>
+
+<p>再看一下该SQL的执行计划走了相应的索引，而idx_fuhrq因为时间范围覆盖了全表，走全表扫描也是正常。</p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/SqlPlan2.png" src="/2020/12/17/Left%20join%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p>再看一下SHOW WARNINGS没有再进行字符集的转换</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* select#1 */</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> <span class="keyword">AS</span> <span class="string">`fuhrq`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`busiType`</span> <span class="keyword">AS</span> <span class="string">`busiType`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`zhangh`</span> <span class="keyword">AS</span> <span class="string">`zhangh`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`DOCUMENT_NUMBER`</span> <span class="keyword">AS</span> <span class="string">`createNumber`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`HUM`</span> <span class="keyword">AS</span> <span class="string">`hum`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`c`</span>.<span class="string">`ORGANNAME`</span> <span class="keyword">AS</span> <span class="string">`organname`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`yinjkbh`</span> <span class="keyword">AS</span> <span class="string">`yinjkbh`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`channelId`</span> <span class="keyword">AS</span> <span class="string">`channelId`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`localSerialNum`</span> <span class="keyword">AS</span> <span class="string">`localSerialNum`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`warehousingStatus`</span> <span class="keyword">AS</span> <span class="string">`warehousingStatus`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`qiyrq`</span> <span class="keyword">AS</span> <span class="string">`qiyrq`</span></span><br><span class="line">	,<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`ruky`</span> <span class="keyword">AS</span> <span class="string">`ruky`</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="string">`localhost`</span>.<span class="string">`organarchives`</span> <span class="string">`o`</span></span><br><span class="line"><span class="keyword">JOIN</span> <span class="string">`localhost`</span>.<span class="string">`yinj_serial_status`</span> <span class="string">`a`</span></span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="string">`localhost`</span>.<span class="string">`zhanghb`</span> <span class="string">`b`</span> <span class="keyword">ON</span> ((<span class="string">`localhost`</span>.<span class="string">`b`</span>.<span class="string">`ZHANGH`</span> = <span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`zhangh`</span>))</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="string">`localhost`</span>.<span class="string">`organarchives`</span> <span class="string">`c`</span> <span class="keyword">ON</span> ((<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`jigh`</span> = <span class="string">`localhost`</span>.<span class="string">`c`</span>.<span class="string">`ORGANNUM`</span>))</span><br><span class="line"><span class="keyword">WHERE</span> (</span><br><span class="line">		(<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`serialStatus`</span> = <span class="string">'6'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> &gt;= <span class="string">'2020-10-01'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> &lt;= <span class="string">'2020-12-16'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`o`</span>.<span class="string">`LEVELFLAG`</span> <span class="keyword">LIKE</span> <span class="string">'6iv%'</span>)</span><br><span class="line">		<span class="keyword">AND</span> (<span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`jigh`</span> = <span class="string">`localhost`</span>.<span class="string">`o`</span>.<span class="string">`ORGANNUM`</span>)</span><br><span class="line">		)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="string">`localhost`</span>.<span class="string">`a`</span>.<span class="string">`fuhrq`</span> <span class="keyword">DESC</span></span><br></pre></td></tr></table></figure>
+
+
+      </section>
+      <section class="extra">
+        
+        
+        
+        
+<nav class="nav">
+  
+  
+    <a href="/2020/12/17/Log4j%201.x%E7%89%88%E6%9C%AC%E9%AB%98%E5%B9%B6%E5%8F%91%E6%83%85%E5%86%B5%E4%B8%8B%E5%BC%95%E5%8F%91BLOCKED%E6%AD%BB%E9%94%81%E7%9A%84%E9%97%AE%E9%A2%98/">Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题<i class="iconfont iconright"></i></a>
+  
+</nav>
+
+      </section>
+      
+      <section class="comments">
+  
+  <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "a8aBoMUoOnc1VQB8luHmCH4Y-gzGzoHsz",
+        app_key: "EEUcoQEF0g8aC9y8tqj1koxE",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="tencent://message/?Menu=yes&uin=784118046 " target="_blank" onMouseOver="this.style.color= '#12B7F5'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconQQ "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="javascript:; " target="_blank" onMouseOver="this.style.color= '#09BB07'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconwechat-fill "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="mailto:784118046@qq.com " target="_blank" onMouseOver="this.style.color='#FFBE5B'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconmail"></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://junanaa.gitee.io/">JinPeng Wang</a> .AllRightsReserved</p></div>
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  <div class="fab fab-daovoice">
+    <i class="iconfont iconcomment"></i>
+  </div>
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/modules.js"></script>
+<script src="/js/zui.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["DaoVoiceObject"] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    a.charset = "utf-8";
+    m.parentNode.insertBefore(a, m)
+  })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+    "//widget.daovoice.io/widget/0f81ff2f.js", "daovoice")
+  daovoice('init', {
+    app_id: "abcdefg"
+  }, {
+    launcher: {
+      disableLauncherIcon: true,
+    },
+  });
+  daovoice('update');
+</script>
+
+
+
+<script>
+  (function () {
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    } else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?4c204d8bc027a0455b5fc642ac334ca8";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+</html>
