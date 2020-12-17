@@ -13,8 +13,12 @@
   <meta name="google" content="notranslate" />
 
   
+  <meta name="keywords" content=", Redis, 缓存穿透, 缓存击穿"> 
   
-  <meta name="description" content="Redis缓存穿透缓存穿透的概念很简单，用户想要查询一..."> 
+  <meta name="description" content="Redis学习记录1
+
+
+Redis缓存穿透缓存穿透的..."> 
   
   <meta name="author" content="John Doe"> 
 
@@ -158,20 +162,20 @@
     <article class="article">
   <div class="wrap">
     <section class="head">
-  <img   class="lazyload" data-original="/images/theme/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <img   class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui3.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
   <div class="head-mask">
     <h1 class="head-title">Redis缓存穿透</h1>
     <div class="head-info">
-      <span class="post-info-item"><i class="iconfont iconcalendar"></i>May 12, 2020</span
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>October 16, 2020</span
         class="post-info-item">
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1323</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>1336</span>
     </div>
   </div>
 </section>
     <section class="main">
       <section class="content">
-        <h3 id="Redis缓存穿透"><a href="#Redis缓存穿透" class="headerlink" title="Redis缓存穿透"></a>Redis缓存穿透</h3><p>缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于是向持久层数据库查询。发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中，于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了缓存穿透。</p>
+        <h2 id="Redis缓存穿透"><a href="#Redis缓存穿透" class="headerlink" title="Redis缓存穿透"></a>Redis缓存穿透</h2><p>缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于是向持久层数据库查询。发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中，于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了缓存穿透。</p>
 <p><strong>这里需要注意和缓存击穿的区别，缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。</strong></p>
 <h4 id="数据库瓶颈解决方法：减少数据库连接"><a href="#数据库瓶颈解决方法：减少数据库连接" class="headerlink" title="数据库瓶颈解决方法：减少数据库连接"></a>数据库瓶颈解决方法：减少数据库连接</h4><ol>
 <li>数据库连接池</li>
@@ -198,16 +202,16 @@
 <p>布隆算法说数据存在，那么实际可能不存在；数据不存在，则一定不存在。</p>
 <h5 id="布隆算法弊端：删除数据"><a href="#布隆算法弊端：删除数据" class="headerlink" title="布隆算法弊端：删除数据"></a>布隆算法弊端：删除数据</h5><p>bit数组中的1值可能代表了多个id号，数组中的1值无法轻易的变为0。</p>
 <p>通过二维计数器来解决这个问题，如果计数器的值为0，则可将1值变为0。</p>
-<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture3.jpg" src="/2020/05/12/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture3.jpg" src="/2020/10/16/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
 <p><strong>2、缓存空对象</strong></p>
 <p>当存储层不命中后，即使返回的空对象也将其缓存起来，同时会设置一个过期时间，之后再访问这个数据将会从缓存中获取，保护了后端数据源；</p>
-<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture4.jpg" src="/2020/05/12/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture4.jpg" src="/2020/10/16/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
 <p>但是这种方法会存在两个问题：</p>
 <p>如果空值能够被缓存起来，这就意味着缓存需要更多的空间存储更多的键，因为这当中可能会有很多的空值的键；即使对空值设置了过期时间，还是会存在缓存层和存储层的数据会有一段时间窗口的不一致，这对于需要保持一致性的业务会有影响。</p>
 <p><strong>二、缓存雪崩</strong></p>
 <p>1、概念</p>
 <p>缓存雪崩是指，缓存层出现了错误，不能正常工作了。于是所有的请求都会达到存储层，存储层的调用量会暴增，造成存储层也会挂掉的情况。</p>
-<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture5.jpg" src="/2020/05/12/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
+<p><img class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/img/picture5.jpg" src="/2020/10/16/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt></p>
 <p><strong>2、解决方案</strong></p>
 <p><strong>（1）redis高可用</strong></p>
 <p>这个思想的含义是，既然redis有可能挂掉，那我多增设几台redis，这样一台挂掉之后其他的还可以继续工作，其实就是搭建的集群。</p>
@@ -215,9 +219,17 @@
 <p>这个解决方案的思想是，在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。</p>
 <p><strong>（3）数据预热</strong></p>
 <p>数据加热的含义就是在正式部署之前，我先把可能的数据先预先访问一遍，这样部分可能大量访问的数据就会加载到缓存中。在即将发生大并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。</p>
-
       </section>
       <section class="extra">
+        
+        <ul class="copyright">
+  
+  <li><strong>本文作者：</strong>John Doe</li>
+  <li><strong>本文链接：</strong><a href="http://yoursite.com/2020/10/16/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/index.html">http://yoursite.com/2020/10/16/Redis%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F/index.html</a></li>
+  <li><strong>版权声明：</strong>本博客所有文章均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh"
+      rel="external nofollow" target="_blank"> BY-NC-SA </a>许可协议，转载请注明出处！</li>
+  
+</ul>
         
         
         
