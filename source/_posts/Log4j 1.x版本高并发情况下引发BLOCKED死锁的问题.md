@@ -345,9 +345,8 @@ synchronized (sw) {
 ```
 ##### 因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：
 
-![1602750631752](C:\Users\Aurora\AppData\Roaming\Typora\typora-user-images\1602750631752.png)
+![](https://gitee.com/Qzjp/pics/raw/master/img/picture1.png)
 
-![1602750656643](C:\Users\Aurora\AppData\Roaming\Typora\typora-user-images\1602750656643.png)
+![](https://gitee.com/Qzjp/pics/raw/master/img/picture2.png)
 
 ##### 测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。
-
