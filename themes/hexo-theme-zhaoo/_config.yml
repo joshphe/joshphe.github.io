@@ -38,12 +38,12 @@ menu:
   about: /about || 关于
 
 # Copyright
-copyright: <p>Copyright© 2018-2020 | <a target="_blank" href="http://junanaa.gitee.io/">JinPeng Wang</a> .AllRightsReserved</p>
+copyright: <p>Copyright© 2018-2020 | <a target="_blank" href="http://joshphe.github.io">JinPeng Wang</a> .AllRightsReserved</p>
 
 # Social
 social:
   qq: tencent://message/?Menu=yes&uin=784118046 || iconQQ || '#12B7F5'
-  wechat: javascript:; || iconwechat-fill || '#09BB07'
+  #wechat: javascript:; || iconwechat-fill || '#09BB07'
   #instagram: https://www.instagram.com/izhaoo/ || iconinstagram || '#DA2E76'
   #github: https://github.com/izhaoo || icongithub-fill || '#24292E'
   email: mailto:784118046@qq.com || iconmail
@@ -72,7 +72,7 @@ donate:
 
 # Copyright
 post_copyright:
-  enable: false
+  enable: true
 
 # Carrier（copy article with one click）
 carrier:

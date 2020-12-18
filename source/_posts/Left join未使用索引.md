@@ -1,6 +1,16 @@
-#### Left join未使用索引
+---
+title: Left join未使用索引
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui1.jpg  #设置本地图片
+keywords: left join, 索引, Mysql, 字符集
+---
 
-​	先上SQL语句：
+Mysql字符集导致索引失效
+
+<!--more-->
+
+## Mysql字符集不同导致索引失效
+
+先上SQL语句：
 
 ```sql
 SELECT a.fuhrq AS fuhrq
@@ -89,7 +99,7 @@ ORDER BY `localhost`.`a`.`fuhrq` DESC
 
 可以看到在LEFT JOIN的ON关联条件中做了convert(`localhost`.`b`.`ZHANGH` using utf8mb4)、convert(`localhost`.`c`.`ORGANNUM` using utf8mb4)、convert(`localhost`.`c`.`ORGANNUM` using utf8mb4)分别对zhanghao、organnum做了字符集的转换，导致不适用表上的索引，而是全表扫描。
 
-看了一下几张表的字符集，发现yinj_serial_status表字段的字符集为utf8mb4、utf8mb4_general_ci，另外两张表为utf8、utf8_general_ci，当yinj_serial_status表作为渠道表时，需要将被渠道表的字符集转为utf8mb4
+看了一下几张表的字符集，发现yinj_serial_status表字段的字符集为utf8mb4、utf8mb4_general_ci，另外两张表为utf8、utf8_general_ci，当yinj_serial_status表作为驱动表时，需要将被驱动表的字符集转为utf8mb4
 
 ```
 SHOW FULL COLUMNS FROM yinj_serial_status;
@@ -119,7 +129,7 @@ ALTER TABLE yinj_serial_status CONVERT TO CHARACTER SET utf8 COLLATE utf8_genera
 
 ![](https://gitee.com/Qzjp/pics/raw/master/img/SqlPlan2.png)
 
-再看一下SHOW WARNINGS没有再进行字符集的转换
+整条SQL执行完成只需0.5s，再看一下SHOW WARNINGS没有再进行字符集的转换
 
 ```sql
 /* select#1 */
@@ -148,4 +158,3 @@ WHERE (
 		)
 ORDER BY `localhost`.`a`.`fuhrq` DESC
 ```
-

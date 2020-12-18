@@ -1,3 +1,13 @@
+---
+title: Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui2.jpg  #设置本地图片
+keywords: log4j, 1.x, 高并发, 死锁, BLOCKED
+---
+
+1.x版本Log4j高并发时的性能问题记录
+
+<!--more-->
+
 ## Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题
 
 ##### 应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：

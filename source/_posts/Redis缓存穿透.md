@@ -1,10 +1,14 @@
 ---
 title: Redis缓存穿透
-date: 2020-05-12 23:05:28
-tags:
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui3.jpg  #设置本地图片
+keywords: Redis, 缓存穿透, 缓存击穿
 ---
 
-### Redis缓存穿透
+Redis学习记录1
+
+<!--more-->
+
+## Redis缓存穿透
 
 缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于是向持久层数据库查询。发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中，于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了缓存穿透。
 
