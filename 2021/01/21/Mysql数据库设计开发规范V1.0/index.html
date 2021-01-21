@@ -1,0 +1,419 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MySQL数据库设计开发规范 - Hexo</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+
+  
+  <meta name="keywords" content=", MySQL, 开发规范"> 
+  
+  <meta name="description" content="MySQL数据库设计开发规范
+
+
+Mysql 数据库设..."> 
+  
+  <meta name="author" content="JinPeng Wang"> 
+
+  
+    <link rel="icon" href="/images/icons/favicon-16x16.png" type="image/png" sizes="16x16">
+  
+  
+    <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  
+  
+    <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  
+  
+    <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_h1619vhl1nr.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+  
+  
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css">
+
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        loadingImage: '/images/theme/loading.gif',
+      },
+      donate: {
+        enable: false,
+        alipay: '',
+        wechat: ''
+      },
+      motto: {
+        api: '',
+        default: '夜半花落听雨声，不自欢喜不自愁。'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        alwaysShow: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: true
+      }
+    }
+  </script>
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+<body class="lock-screen">
+  <div class="loading"></div>
+  
+
+
+<nav class="navbar">
+  <div class="left"></div>
+  <div class="center">MySQL数据库设计开发规范</div>
+  <div class="right">
+    <i class="iconfont iconmenu j-navbar-menu"></i>
+  </div>
+</nav>
+
+  <nav class="menu">
+  <div class="menu-wrap">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content">
+      
+      
+      
+      
+      <li class="menu-item"><a href="/ " class="underline"> 首页</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/galleries " class="underline"> 摄影</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/archives " class="underline"> 归档</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/tags " class="underline"> 标签</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/categories " class="underline"> 分类</a></li>
+      
+      
+      
+      
+      <li class="menu-item"><a href="/about " class="underline"> 关于</a></li>
+      
+    </ul>
+    <div class="menu-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://joshphe.github.io">JinPeng Wang</a> .AllRightsReserved</p></div>
+  </div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui2.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">MySQL数据库设计开发规范</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>January 21, 2021</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>4150</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        <h3 id="Mysql-数据库设计约束："><a href="#Mysql-数据库设计约束：" class="headerlink" title="Mysql 数据库设计约束："></a>Mysql 数据库设计约束：</h3><h4 id="建表约束"><a href="#建表约束" class="headerlink" title="建表约束"></a>建表约束</h4><h6 id="【强制】-日期、时间相关的字段，根据精度要求不同，使用date或timestamp类型，不要使用char或varchar类型，如果字段只包含日期不包含具体时间，使用date型，把时分秒设置为00-00-00"><a href="#【强制】-日期、时间相关的字段，根据精度要求不同，使用date或timestamp类型，不要使用char或varchar类型，如果字段只包含日期不包含具体时间，使用date型，把时分秒设置为00-00-00" class="headerlink" title="【强制】 日期、时间相关的字段，根据精度要求不同，使用date或timestamp类型，不要使用char或varchar类型，如果字段只包含日期不包含具体时间，使用date型，把时分秒设置为00:00:00"></a>【强制】 日期、时间相关的字段，根据精度要求不同，使用date或timestamp类型，不要使用char或varchar类型，如果字段只包含日期不包含具体时间，使用date型，把时分秒设置为00:00:00</h6><p><strong>解读：</strong>使用char或varchar类型可能造成优化器估算不准，影响数据处理效率。</p>
+<h6 id="【强制】-应用用户没有授予管理员权限"><a href="#【强制】-应用用户没有授予管理员权限" class="headerlink" title="【强制】 应用用户没有授予管理员权限"></a>【强制】 应用用户没有授予管理员权限</h6><p><strong>解读：</strong>严格的权限管理能有效避免不必要的操作失误。</p>
+<h6 id="【强制】建表时需要对表和字段增加注释"><a href="#【强制】建表时需要对表和字段增加注释" class="headerlink" title="【强制】建表时需要对表和字段增加注释"></a>【强制】建表时需要对表和字段增加注释</h6><p><strong>解读：</strong>规范的建表和注释便于后续维护和管理。</p>
+<h6 id="【强制】所有数据库对象名称禁止使用mysql保留关键字"><a href="#【强制】所有数据库对象名称禁止使用mysql保留关键字" class="headerlink" title="【强制】所有数据库对象名称禁止使用mysql保留关键字"></a>【强制】所有数据库对象名称禁止使用mysql保留关键字</h6><p><strong>解读：</strong>使用Mysql保留关键字会导致SQL报错。</p>
+<h6 id="【建议】高并发OLTP交易系统尽量避免使用大字段（BLOB、CLOB、LONG）"><a href="#【建议】高并发OLTP交易系统尽量避免使用大字段（BLOB、CLOB、LONG）" class="headerlink" title="【建议】高并发OLTP交易系统尽量避免使用大字段（BLOB、CLOB、LONG）"></a>【建议】高并发OLTP交易系统尽量避免使用大字段（BLOB、CLOB、LONG）</h6><p><strong>解读：</strong>因LOB字段结构特点，高并发系统中LOB字段时长出现导致系统运行缓慢的问题。被删除或更新的BLOB字段所占用空间不会自动批量回收，若表存在大量删除、更新操作时，BLOB所在Segments会迅速耗尽空间，新的INSERT需要空间时，会在高水位线上加锁后，回收曾使用但已经过期的BLOB空间，因该操作效率很低，数据库会有大量的‘enq:HW - contention’等待，相关SQL会由于该等待而串行执行，业务受影响十分严重。</p>
+<h6 id="【建议】建议控制单表数据量在1000万以内。单表数据文件控制在10G。单行数据建议不超过8K"><a href="#【建议】建议控制单表数据量在1000万以内。单表数据文件控制在10G。单行数据建议不超过8K" class="headerlink" title="【建议】建议控制单表数据量在1000万以内。单表数据文件控制在10G。单行数据建议不超过8K"></a>【建议】建议控制单表数据量在1000万以内。单表数据文件控制在10G。单行数据建议不超过8K</h6><p><strong>解读：</strong>表记录数过多对数据库性能会有影响，若单行记录仅仅超出一点，还会产生较大的空间浪费。</p>
+<h6 id="【建议】不建议使用Mysql分区表"><a href="#【建议】不建议使用Mysql分区表" class="headerlink" title="【建议】不建议使用Mysql分区表"></a>【建议】不建议使用Mysql分区表</h6><p><strong>解读：</strong>Mysql分区表在物理上表现为多个文件，在逻辑上表现为一张表，谨慎选择分区键，跨分区查询效率可能会更低，建议采用物理分表的方式管理大数据。</p>
+<h6 id="【建议】不建议在数据库中存储图片，文件等大的二进制数据"><a href="#【建议】不建议在数据库中存储图片，文件等大的二进制数据" class="headerlink" title="【建议】不建议在数据库中存储图片，文件等大的二进制数据"></a>【建议】不建议在数据库中存储图片，文件等大的二进制数据</h6><p><strong>解读：</strong>通常文件很大，会短时间内造成数据量快速增长，数据库进行数据库读取时，会进行大量的随机IO操作，文件很大时，IO操作很耗时。这类二进制数据建议存储于文件服务器，数据库只存储文件地址信息。</p>
+<hr>
+<h4 id="SQL约束"><a href="#SQL约束" class="headerlink" title="SQL约束"></a>SQL约束</h4><h6 id="【强制】where条件里的过滤字段上禁止使用函数"><a href="#【强制】where条件里的过滤字段上禁止使用函数" class="headerlink" title="【强制】where条件里的过滤字段上禁止使用函数"></a>【强制】where条件里的过滤字段上禁止使用函数</h6><p><strong>解读：</strong>在sql的where子句中带有索引的列使用函数时，优化器会忽略掉索引导致索引失效。建议将函数应用在条件上，索引是可以生效的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> staff <span class="hljs-keyword">where</span> trunc(birthdate) = <span class="hljs-string">'01-MAY-82'</span>;    //会用到索引<br><br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> staff <span class="hljs-keyword">where</span> birthdate &lt; (<span class="hljs-keyword">to_date</span>(<span class="hljs-string">'01-MAY-82'</span>) + <span class="hljs-number">0.9999</span>);    //不会使用索引<br></code></pre></td></tr></table></figure>
+
+<h6 id="【强制】禁止使用LIKE-‘-’进行模糊匹配查询"><a href="#【强制】禁止使用LIKE-‘-’进行模糊匹配查询" class="headerlink" title="【强制】禁止使用LIKE ‘%_’进行模糊匹配查询"></a>【强制】禁止使用LIKE ‘%_’进行模糊匹配查询</h6><p><strong>解读：</strong>对字段使用like模糊匹配时，如果不从字段的第一位开始，将无法使用索引，禁止使用。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> student <span class="hljs-keyword">where</span> <span class="hljs-keyword">name</span> <span class="hljs-keyword">like</span> <span class="hljs-string">'aaa%'</span>;    //'aaa%' 会用到索引<br><br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> student <span class="hljs-keyword">where</span> <span class="hljs-keyword">name</span> <span class="hljs-keyword">like</span> <span class="hljs-string">'%aaa'</span>;    //'%aaa' 或者 '_aaa' 不会使用索引<br></code></pre></td></tr></table></figure>
+
+<h6 id="【强制】绑定变量和字段数据类型需要保持一致"><a href="#【强制】绑定变量和字段数据类型需要保持一致" class="headerlink" title="【强制】绑定变量和字段数据类型需要保持一致"></a>【强制】绑定变量和字段数据类型需要保持一致</h6><p><strong>解读：</strong>字段定义和SQL绑定变量传进来的值的类型需要保持一致，否则会导致隐式转换无法使用索引。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">例如：dept_id 是一个varchar2型的字段，但在查询时把该字段作为number类型以where条件传给Oracle,这样会导致索引失效。<br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> temp <span class="hljs-keyword">where</span> dept_id = <span class="hljs-number">33333333333</span> ; //错误的例子<br><br><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> temp <span class="hljs-keyword">where</span> dept_id =<span class="hljs-string">'33333333333'</span>; //正确的例子<br></code></pre></td></tr></table></figure>
+
+<h6 id="【强制】在查询中指定所需的列，不要直接使用-‘-’-返回所有的列"><a href="#【强制】在查询中指定所需的列，不要直接使用-‘-’-返回所有的列" class="headerlink" title="【强制】在查询中指定所需的列，不要直接使用 ‘*’ 返回所有的列"></a>【强制】在查询中指定所需的列，不要直接使用 ‘*’ 返回所有的列</h6><p><strong>解读：</strong></p>
+<p>（1）在查询中使用select * 时，需要多做一步查询内部系统目录以便把表中的所有字段名找出来。</p>
+<p>（2）明确字段名，将来在表增加字段的时候，不会导致程序报错。</p>
+<p>（3）读取不需要的列会增加CPU、IO、NET消耗。</p>
+<p>（4）无法有效的利用覆盖索引。</p>
+<h6 id="【强制】变量和参数在类型和长度必须与表定义的列类型和长度匹配"><a href="#【强制】变量和参数在类型和长度必须与表定义的列类型和长度匹配" class="headerlink" title="【强制】变量和参数在类型和长度必须与表定义的列类型和长度匹配"></a>【强制】变量和参数在类型和长度必须与表定义的列类型和长度匹配</h6><p><strong>解读：</strong>减少存储空间和IO资源的浪费，避免隐式转换而导致不使用索引的情况。</p>
+<h6 id="【强制】SQL语句中的表关联查询不允许超过5个，需要join的字段，数据类型必须绝对一致；多表关联查询时，保证被关联的字段需要有索引"><a href="#【强制】SQL语句中的表关联查询不允许超过5个，需要join的字段，数据类型必须绝对一致；多表关联查询时，保证被关联的字段需要有索引" class="headerlink" title="【强制】SQL语句中的表关联查询不允许超过5个，需要join的字段，数据类型必须绝对一致；多表关联查询时，保证被关联的字段需要有索引"></a>【强制】SQL语句中的表关联查询不允许超过5个，需要join的字段，数据类型必须绝对一致；多表关联查询时，保证被关联的字段需要有索引</h6><p><strong>解读：</strong>优化器对与多表连接查询的处理效果不佳，应尽可能减少多表连接的情况，关联字段需要有索引避免不必要的全表扫描，提高执行效率。</p>
+<h6 id="【强制】对于很大的表进行全表删除时，不允许使用全表delete，应用truncate或drop重建"><a href="#【强制】对于很大的表进行全表删除时，不允许使用全表delete，应用truncate或drop重建" class="headerlink" title="【强制】对于很大的表进行全表删除时，不允许使用全表delete，应用truncate或drop重建"></a>【强制】对于很大的表进行全表删除时，不允许使用全表delete，应用truncate或drop重建</h6><p><strong>解读：</strong>delete语句是dml，该操作会放到rollback segment中，事务提交后才生效；delete语句不影响表所占用的extent，高水线（high watermark）保持原位置不动；而truncate会将高水线复位（回到最开始）。</p>
+<p>另外删除速度一般来说：drop &gt; truncate &gt; delete</p>
+<h6 id="【强制】大批量UPDATE、DELETE、INSERT操作，要分批多次操作"><a href="#【强制】大批量UPDATE、DELETE、INSERT操作，要分批多次操作" class="headerlink" title="【强制】大批量UPDATE、DELETE、INSERT操作，要分批多次操作"></a>【强制】大批量UPDATE、DELETE、INSERT操作，要分批多次操作</h6><p><strong>解读：</strong>大批量操作可能会造成严重的主从延迟，binlog日志为row格式时会产生大量的日志，应避免产生大事务操作。</p>
+<h6 id="【强制】禁止使用order-by-rand-进行随机排序"><a href="#【强制】禁止使用order-by-rand-进行随机排序" class="headerlink" title="【强制】禁止使用order by rand() 进行随机排序"></a>【强制】禁止使用order by rand() 进行随机排序</h6><p><strong>解读：</strong>将rand()放在order by子句中会被多次执行，效率极低，禁止使用。</p>
+<h6 id="【强制】受制于GTID复制的限制，不使用create-table-……-select语句建立表、不可以在事务中使用create-temporary-table建立临时表、不可使用关联更新，同时更新事务表与非事务表。"><a href="#【强制】受制于GTID复制的限制，不使用create-table-……-select语句建立表、不可以在事务中使用create-temporary-table建立临时表、不可使用关联更新，同时更新事务表与非事务表。" class="headerlink" title="【强制】受制于GTID复制的限制，不使用create table …… select语句建立表、不可以在事务中使用create temporary table建立临时表、不可使用关联更新，同时更新事务表与非事务表。"></a>【强制】受制于GTID复制的限制，不使用create table …… select语句建立表、不可以在事务中使用create temporary table建立临时表、不可使用关联更新，同时更新事务表与非事务表。</h6><p><strong>解读：</strong>受制于GTID复制的限制。</p>
+<h6 id="【建议】对应同一列进行or判断时，使用in代替or"><a href="#【建议】对应同一列进行or判断时，使用in代替or" class="headerlink" title="【建议】对应同一列进行or判断时，使用in代替or"></a>【建议】对应同一列进行or判断时，使用in代替or</h6><p><strong>解读：</strong>in或or在字段有添加索引的情况下，查询速度近似，但在没有添加索引的情况下，连接的字段越多，in比or的效率高很多。</p>
+<h6 id="【建议】尽量避免使用全表扫描"><a href="#【建议】尽量避免使用全表扫描" class="headerlink" title="【建议】尽量避免使用全表扫描"></a>【建议】尽量避免使用全表扫描</h6><p><strong>解读：</strong>对于小表或代码表的访问，全表扫描也许是合理的，其他情况下应尽量避免全表扫描，提高执行效率。</p>
+<h6 id="【建议】明显不会有重复值时使用UNION-ALL而不是UNION"><a href="#【建议】明显不会有重复值时使用UNION-ALL而不是UNION" class="headerlink" title="【建议】明显不会有重复值时使用UNION ALL而不是UNION"></a>【建议】明显不会有重复值时使用UNION ALL而不是UNION</h6><p><strong>解读：</strong>union：对两个结果集进行并集操作，不包括重复行，同时进行默认规则的排序；union all：对两个结果集进行并集操作，包括重复行，不进行排序。所以在已知不会有重复值的情况下使用union all效率要高很多，因为union需要进行排重。</p>
+<hr>
+<h4 id="索引约束"><a href="#索引约束" class="headerlink" title="索引约束"></a>索引约束</h4><h6 id="【强制】-Mysql每个InnoDB表必须要有主键，推荐使用自增列作为主键"><a href="#【强制】-Mysql每个InnoDB表必须要有主键，推荐使用自增列作为主键" class="headerlink" title="【强制】 Mysql每个InnoDB表必须要有主键，推荐使用自增列作为主键"></a>【强制】 Mysql每个InnoDB表必须要有主键，推荐使用自增列作为主键</h6><p><strong>解读：</strong>递增主键在写入时可以提高插入性能，避免Page分裂，减少表碎片，提升内存和空间的使用。InnoDB默认会给没有主键的表创建一个不可见的、长度为6字节的row_id，且InnoDB维护了一个全局的dictsys.row_id，所有未定义主键的表都共用这个row_id。无主键的表删除时，使用row模式的主从架构会导致备份表夯住。</p>
+<h6 id="【强制】-分区表上如无特别原因不使用全局索引"><a href="#【强制】-分区表上如无特别原因不使用全局索引" class="headerlink" title="【强制】 分区表上如无特别原因不使用全局索引"></a>【强制】 分区表上如无特别原因不使用全局索引</h6><p><strong>解读：</strong>分区表使用global index或local index因根据实际的业务需要来设计，应尽量将业务需要统计的信息放在同一个分区中，使用local index使分区表的性能最大化。若需要使用global index，需说明原因，对分区进行维护后全局索引会失效，应特别注意。</p>
+<h6 id="【强制】-OLTP系统每张表索引不超过5个"><a href="#【强制】-OLTP系统每张表索引不超过5个" class="headerlink" title="【强制】 OLTP系统每张表索引不超过5个"></a>【强制】 OLTP系统每张表索引不超过5个</h6><p><strong>解读：</strong>控制索引数量可以减少不必要的索引空间维护和使用，对于经常插入、更新、删除数据的表应减少索引数量，过多的索引会导致索引开销大，影响性能。</p>
+<h6 id="【强制】-复合索引字段不超过3个，必须将区分度更高的字段放在左边"><a href="#【强制】-复合索引字段不超过3个，必须将区分度更高的字段放在左边" class="headerlink" title="【强制】 复合索引字段不超过3个，必须将区分度更高的字段放在左边"></a>【强制】 复合索引字段不超过3个，必须将区分度更高的字段放在左边</h6><p><strong>解读：</strong>复合索引的设计应综合考虑前缀性和可选性，索引字段不宜过多，应尽可能将区分度高，查询使用较频繁的字段放在左边，这样能够一开始就有效的过滤掉无用数据。在写SQL时，若WHERE条件中包含多个条件，应看表上是否有线程的联合索引可使用，注意各个条件的顺序应尽量和复合索引字段顺序一致。</p>
+<h6 id="【强制】-没有重复索引（如a和a-b列都建了索引）"><a href="#【强制】-没有重复索引（如a和a-b列都建了索引）" class="headerlink" title="【强制】 没有重复索引（如a和a,b列都建了索引）"></a>【强制】 没有重复索引（如a和a,b列都建了索引）</h6><p><strong>解读：</strong>避免在表上建立重复的索引如复合索引(a,b)和单列索引a，降低索引的维护成本。</p>
+<h6 id="【强制】-外键的子表关联字段上必须有索引"><a href="#【强制】-外键的子表关联字段上必须有索引" class="headerlink" title="【强制】 外键的子表关联字段上必须有索引"></a>【强制】 外键的子表关联字段上必须有索引</h6><p><strong>解读：</strong>如果使用了外键约束，子表的关联字段上必须创建索引，否则主表的每一条记录删除，都会导致对子表一次全表扫描。</p>
+<h6 id="【强制】-避免在更新频繁、区分度不高的列上单独建立索引"><a href="#【强制】-避免在更新频繁、区分度不高的列上单独建立索引" class="headerlink" title="【强制】 避免在更新频繁、区分度不高的列上单独建立索引"></a>【强制】 避免在更新频繁、区分度不高的列上单独建立索引</h6><p><strong>解读：</strong>区分度不高的列单独创建索引的优化效果很小，但是较为频繁的更新则会让索引的维护成本更高。</p>
+<hr>
+<h4 id="存储过程约束"><a href="#存储过程约束" class="headerlink" title="存储过程约束"></a>存储过程约束</h4><h6 id="【强制】禁止使用存储过程"><a href="#【强制】禁止使用存储过程" class="headerlink" title="【强制】禁止使用存储过程"></a>【强制】禁止使用存储过程</h6><p><strong>解读：</strong>MySQL数据库在使用存储过程中会有一些限制，如优化器无法使用关键字来优化单个查询调用存储过程、优化器无法评估存储过程函数的执行成本等。而使用存储过程处理复杂业务逻辑时，在性能上没有太大提升，并且处理简单逻辑的语句时，是否使用存储过程性能差别并不大，同时对于存储过程的管理也相对复杂，所以不允许使用存储过程。</p>
+<hr>
+<h4 id="触发器约束"><a href="#触发器约束" class="headerlink" title="触发器约束"></a>触发器约束</h4><h6 id="【强制】禁止使用触发器"><a href="#【强制】禁止使用触发器" class="headerlink" title="【强制】禁止使用触发器"></a>【强制】禁止使用触发器</h6><p><strong>解读：</strong>考虑到降低数据库的复杂度，提高可维护性，减少不可预知的风险，禁止使用触发器。</p>
+<hr>
+<h4 id="视图约束"><a href="#视图约束" class="headerlink" title="视图约束"></a>视图约束</h4><hr>
+<h4 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h4><p>Mysql有自动统计信息收集机制，当表的修改超过10%时触发。统计信息收集为异步模式，因此对短时间内有大量数据变化的表，需要手工收集统计信息。</p>
+<hr>
+<h4 id="系统级别约束"><a href="#系统级别约束" class="headerlink" title="系统级别约束"></a>系统级别约束</h4><h6 id="【强制】在Mysql5-5版本后，Innodb成为默认存储引擎，所有表必须使用该存储引擎"><a href="#【强制】在Mysql5-5版本后，Innodb成为默认存储引擎，所有表必须使用该存储引擎" class="headerlink" title="【强制】在Mysql5.5版本后，Innodb成为默认存储引擎，所有表必须使用该存储引擎"></a>【强制】在Mysql5.5版本后，Innodb成为默认存储引擎，所有表必须使用该存储引擎</h6><p><strong>解读：</strong>Innodb存储引擎支持ACID事务、支持行级锁、具备更好的恢复性以及更好的并发性。</p>
+<h6 id="【强制】MySQL数据库支持多种字符集，如无特殊要求，使用utf8mb4"><a href="#【强制】MySQL数据库支持多种字符集，如无特殊要求，使用utf8mb4" class="headerlink" title="【强制】MySQL数据库支持多种字符集，如无特殊要求，使用utf8mb4"></a>【强制】MySQL数据库支持多种字符集，如无特殊要求，使用utf8mb4</h6><p><strong>解读：</strong>MySQL数据库支持多种字符集，如无特殊要求，使用utf8mb4，注意日常操作导出建表语句的操作中字符集的设置，不同的字符集可能引起索引失效等问题。</p>
+      </section>
+      <section class="extra">
+        
+        <ul class="copyright">
+  
+  <li><strong>本文作者：</strong>JinPeng Wang</li>
+  <li><strong>本文链接：</strong><a href="http://yoursite.com/2021/01/21/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83V1.0/index.html">http://yoursite.com/2021/01/21/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83V1.0/index.html</a></li>
+  <li><strong>版权声明：</strong>转载请注明出处，谢谢！</li>
+  
+</ul>
+        
+        
+        
+        
+<nav class="nav">
+  
+  
+    <a href="/2021/01/21/oracle%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83V1.0/">Oracle数据库设计开发规范<i class="iconfont iconright"></i></a>
+  
+</nav>
+
+      </section>
+      
+      <section class="comments">
+  
+  <div class="btn" id="comments-btn">查看评论</div>
+  
+  
+<div id="valine"></div>
+<script defer src="//unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+  window.onload = function () {
+    var loadValine = function () {
+      new Valine({
+        el: '#valine',
+        app_id: "a8aBoMUoOnc1VQB8luHmCH4Y-gzGzoHsz",
+        app_key: "EEUcoQEF0g8aC9y8tqj1koxE",
+        placeholder: "雁过留痕",
+        avatar: "mp",
+        pageSize: "10",
+        lang: "zh-CN",
+      });
+    }
+    if ( true ) {
+      $("#comments-btn").on("click", function () {
+        $(this).hide();
+        loadValine();
+      });
+    } else {
+      loadValine();
+    }
+  };
+</script>
+
+</section>
+      
+    </section>
+  </div>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="tencent://message/?Menu=yes&uin=784118046 " target="_blank" onMouseOver="this.style.color= '#12B7F5'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconQQ "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="mailto:784118046@qq.com " target="_blank" onMouseOver="this.style.color='#FFBE5B'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconmail"></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2018-2020 | <a target="_blank" href="http://joshphe.github.io">JinPeng Wang</a> .AllRightsReserved</p></div>
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  <div class="fab fab-daovoice">
+    <i class="iconfont iconcomment"></i>
+  </div>
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+</body>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/modules.js"></script>
+<script src="/js/zui.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i["DaoVoiceObject"] = r;
+    i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    a.charset = "utf-8";
+    m.parentNode.insertBefore(a, m)
+  })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+    "//widget.daovoice.io/widget/0f81ff2f.js", "daovoice")
+  daovoice('init', {
+    app_id: "abcdefg"
+  }, {
+    launcher: {
+      disableLauncherIcon: true,
+    },
+  });
+  daovoice('update');
+</script>
+
+
+
+<script>
+  (function () {
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    } else {
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?4c204d8bc027a0455b5fc642ac334ca8";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+</html>
