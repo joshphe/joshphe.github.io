@@ -53,9 +53,9 @@ MySQL数据库设计开发规范
 **解读：**在sql的where子句中带有索引的列使用函数时，优化器会忽略掉索引导致索引失效。建议将函数应用在条件上，索引是可以生效的。
 
 ```sql
-select * from staff where trunc(birthdate) = '01-MAY-82';    //会用到索引
+select * from staff where trunc(birthdate) = '01-MAY-82';    //不会用到索引
 
-select * from staff where birthdate < (to_date('01-MAY-82') + 0.9999);    //不会使用索引
+select * from staff where birthdate < (to_date('01-MAY-82') + 0.9999);    //会使用索引
 ```
 
 ###### 【强制】禁止使用LIKE '%_'进行模糊匹配查询
