@@ -72,7 +72,7 @@ donate:
 
 # Copyright
 post_copyright:
-  enable: true
+  enable: false
 
 # Carrier（copy article with one click）
 carrier:

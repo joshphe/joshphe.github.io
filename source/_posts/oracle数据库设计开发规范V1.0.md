@@ -1,6 +1,6 @@
 ---
 title: Oracle数据库设计开发规范
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui2.jpg  #设置本地图片
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/aurora.png  #设置本地图片
 keywords: Oracle, 开发规范
 ---
 

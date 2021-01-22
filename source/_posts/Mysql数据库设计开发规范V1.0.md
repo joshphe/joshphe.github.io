@@ -1,6 +1,6 @@
 ---
 title: MySQL数据库设计开发规范
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui2.jpg  #设置本地图片
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/mokuc.png  #设置本地图片
 keywords: MySQL, 开发规范
 ---
 
