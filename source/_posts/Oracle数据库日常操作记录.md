@@ -135,3 +135,14 @@ WHERE p.SQL_ID = q.SQL_ID
 	AND q.TIMESTAMP > sysdate - 1;
 ```
 
+##### 五、查询全表扫描的语句
+
+```sql
+--表统计信息收集
+begin
+	dbms_stats.gather_table_stats('USER','TABLE_NAME',cascade => true);
+end;
+/
+```
+
+​    
