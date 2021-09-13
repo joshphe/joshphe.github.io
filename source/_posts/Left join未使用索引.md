@@ -1,6 +1,6 @@
 ---
 title: Left join未使用索引
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui1.jpg  #设置本地图片
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/sea1.png  #设置本地图片
 keywords: left join, 索引, Mysql, 字符集
 ---
 

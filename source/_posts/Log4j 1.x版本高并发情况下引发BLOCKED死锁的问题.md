@@ -1,6 +1,6 @@
 ---
 title: Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/shanshui2.jpg  #设置本地图片
+image: https://gitee.com/Qzjp/pics/raw/master/titlepic/beach.png  #设置本地图片
 keywords: log4j, 1.x, 高并发, 死锁, BLOCKED
 ---
 
