@@ -1,12 +1,14 @@
 ---
 title: Left join未使用索引
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/sea1.png  #设置本地图片
-keywords: left join, 索引, Mysql, 字符集
+date: 2021-05-13 19:25:00
+img: https://gitee.com/Qzjp/pics/raw/master/titlepic/sea1.png  #设置本地图片
+summary: Mysql数据库字符集差异导致索引失效
+tags:
+  - left join
+  - 索引
+  - Mysql
+  - 字符集
 ---
-
-Mysql字符集导致索引失效
-
-<!--more-->
 
 ## Mysql字符集不同导致索引失效
 

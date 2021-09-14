@@ -1,12 +1,12 @@
 ---
 title: MySQL数据库设计开发规范
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/mokuc.png  #设置本地图片
-keywords: MySQL, 开发规范
+date: 2021-01-22 20:25:00
+img: https://gitee.com/Qzjp/pics/raw/master/titlepic/mokuc.png  #设置本地图片
+summary: Mysql数据库设计约束
+tags:
+  - MySQL
+  - 开发规范
 ---
-
-MySQL数据库设计开发规范
-
-<!--more-->
 
 ### Mysql 数据库设计约束：
 

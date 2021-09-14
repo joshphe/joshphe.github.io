@@ -1,8 +1,11 @@
 ---
 title: Oracle数据库日常操作
-image: https://gitee.com/Qzjp/pics/raw/master/titlepic/sea.png  #设置本地图片
-keywords: Oracle, 日常
-
+date: 2021-01-22 19:25:00
+img: https://gitee.com/Qzjp/pics/raw/master/titlepic/ice.png  #设置本地图片
+summary: 记录自己Oracle数据库日常操作
+tags:
+  - Oracle
+  - 日常
 ---
 
 Oracle数据库日常操作
