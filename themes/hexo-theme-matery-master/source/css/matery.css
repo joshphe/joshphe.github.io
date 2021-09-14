@@ -241,7 +241,7 @@ mark {
 }
 
 .bg-color {
-    background-image: linear-gradient(to right, #4cbf30 0%, #0f9d58 100%);
+    background-image: linear-gradient(to right, #b0cecb 0%, #87cecb 100%);
 }
 
 .text-color {
@@ -1839,11 +1839,12 @@ footer .social-statis {
 }
 
 footer a {
-    color: #fff;
+    color: #000000;
+    font-weight: bold;
 }
 
 footer .copy-right {
-    color: #dbdbdb;
+    color: #000000;
 }
 
 /*搜索层样式*/
