@@ -24,7 +24,7 @@ preview:
   model: wave  #cloud
   welcome_image: /images/theme/welcome-image.jpg
   motto:
-    default: 夜半花落听雨声，不自欢喜不自愁。
+    default: 
     color: '#000000'
     api:  #'http://localhost:3000/api/motto'
 
