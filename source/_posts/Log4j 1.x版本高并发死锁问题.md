@@ -242,7 +242,7 @@ public void callAppenders(LoggingEvent event)
 	</appender>
 ```
 
-==<param name="LocationInfo" value="true"/>==
+<param name="LocationInfo" value="true"/>
 
 ##### 该配置作用是输出java文件名称和行号，默认为false。
 
