@@ -1,7 +1,7 @@
 ---
 title: Log4j 1.x版本高并发引发BLOCKED死锁
 date: 2021-05-13 19:25:00
-img: https://gitee.com/Qzjp/pics/raw/master/titlepic/beach.png  #设置本地图片
+img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/beach.png  #设置本地图片
 summary: Log4j 1.x版本高并发BLOCKED死锁
 tags:
   - log4j
@@ -12,7 +12,7 @@ tags:
 
 ## Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题
 
-##### 应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：
+应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：
 
 ```java
 "http-processor732" #79018 daemon prio=5 os_prio=0 tid=0x000000001b26c000 nid=0x2c64 waiting for monitor entry [0x0000000059c3d000]
@@ -54,7 +54,7 @@ tags:
 	at java.lang.Thread.run(Thread.java:748)
 ```
 
-##### 查看引发死锁线程如下：
+查看引发死锁线程如下：
 
 ```java
 "http-processor161" #78384 daemon prio=5 os_prio=0 tid=0x0000000041dad000 nid=0x3bf8 runnable [0x000000005cc3c000]
@@ -123,7 +123,7 @@ tags:
 
 ​	==locked <0x00000007209cfa80> (a org.apache.log4j.Logger)==
 
-##### 通过日志可以大致看出问题是出在org.apache.log4j.Category.callAppenders方法中：
+通过日志可以大致看出问题是出在org.apache.log4j.Category.callAppenders方法中：
 
 ```java
 public void callAppenders(LoggingEvent event)
@@ -165,7 +165,7 @@ public void callAppenders(LoggingEvent event)
   }
 ```
 
-##### 在该方法中，调用了doAppend(event)方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口：
+在该方法中，调用了doAppend(event)方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口：
 
 ```java
   public synchronized void doAppend(LoggingEvent event)
@@ -192,11 +192,9 @@ public void callAppenders(LoggingEvent event)
     }
 ```
 
-##### doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。
+doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。
 
-
-
-##### 此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j 2.x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑：
+此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j 2.x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑：
 
 1. ##### 尽量输出有效日志，减少无用日志的输出。
 
@@ -204,9 +202,7 @@ public void callAppenders(LoggingEvent event)
 
 3. ##### 条件允许的情况下升级log4j版本。
 
-
-
-##### 在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下：
+在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下：
 
 ```xml
 	<appender class="com.primeton.ext.common.logging.AppRollingFileAppender" name="ROLLING_FILE_BS">
@@ -244,9 +240,9 @@ public void callAppenders(LoggingEvent event)
 
 <param name="LocationInfo" value="true"/>
 
-##### 该配置作用是输出java文件名称和行号，默认为false。
+该配置作用是输出java文件名称和行号，默认为false。
 
-##### 在jar包中定位LocationInfo类的代码如下：
+在jar包中定位LocationInfo类的代码如下：
 
 ```java
   public LocationInfo(Throwable t, String fqnOfCallingClass)
@@ -345,7 +341,7 @@ public void callAppenders(LoggingEvent event)
     this.fullInfo = s.substring(ibegin, iend);
   }
 ```
-##### 可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题
+可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题
 
 ```java
 String s;
@@ -355,10 +351,10 @@ synchronized (sw) {
   sw.getBuffer().setLength(0);
 }
 ```
-##### 因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：
+因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：
 
-![](https://gitee.com/Qzjp/pics/raw/master/img/picture1.png)
+![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/picture1.png)
 
-![](https://gitee.com/Qzjp/pics/raw/master/img/picture2.png)
+![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/picture2.png)
 
-##### 测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。
+测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。

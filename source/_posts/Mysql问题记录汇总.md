@@ -1,7 +1,7 @@
 ---
 title: MySQL问题记录汇总
 date: 2021-09-24 10:06:00
-img: https://gitee.com/Qzjp/pics/raw/master/titlepic/cloud.png  #设置本地图片
+img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/cloud.png  #设置本地图片
 summary: Mysql问题记录汇总
 tags:
   - MySQL
@@ -16,5 +16,5 @@ tags:
 
 **show full processlist** 查看数据库中存在大量 **insert、update** 操作积压。通过问题排查，定位为 **binlog** 写满导致磁盘空间不足。
 
-###### **疑问1：应用使用的阿里Druid连接池并设置了超时时间60秒，在数据库操作执行超时的情况下，应用侧未捕获的超时异常。**
+**疑问1：应用使用的阿里Druid连接池并设置了超时时间60秒，在数据库操作执行超时的情况下，应用侧未捕获的超时异常。**
 

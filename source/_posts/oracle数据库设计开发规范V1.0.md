@@ -1,7 +1,7 @@
 ---
 title: Oracle数据库设计开发规范
 date: 2021-01-22 19:25:00
-img: https://gitee.com/Qzjp/pics/raw/master/titlepic/aurora.png  #设置本地图片
+img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/aurora.png  #设置本地图片
 summary: Oracle数据库设计约束
 cover: true
 tags:
