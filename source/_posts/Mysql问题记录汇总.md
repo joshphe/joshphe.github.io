@@ -1,7 +1,7 @@
 ---
 title: MySQL问题记录汇总
 date: 2021-09-24 10:06:00
-img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/cloud.png  #设置本地图片
+img: https://gitee.com/Qzjp/pics/raw/master/2022/cloud.png  #设置本地图片
 summary: Mysql问题记录汇总
 tags:
   - MySQL

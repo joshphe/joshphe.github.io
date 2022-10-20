@@ -1,7 +1,7 @@
 ---
 title: Left join未使用索引
 date: 2021-05-13 19:25:00
-img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/sea.png  #设置本地图片
+img: https://gitee.com/Qzjp/pics/raw/master/2022/sea.png  #设置本地图片
 summary: Mysql数据库字符集差异导致索引失效
 tags:
   - left join
@@ -65,7 +65,7 @@ c表（400+条记录）索引如下
 
 该SQL跑了190S依然没有将结果查询出来，查看了一下该SQL的执行计划没有使用a表的idx_zhangh索引查询，而是全表扫描：
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/SqlPlan1.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/SqlPlan1.png)
 
 看了一下SHOW WARNINGS
 
@@ -111,15 +111,15 @@ SHOW FULL COLUMNS FROM organarchives;
 
 yinj_serial_status表
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/yinj_serial_status.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/yinj_serial_status.png)
 
 zhanghb表
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/zhanghb.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/zhanghb.png)
 
 organarchives表
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/organarchives.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/organarchives.png)
 
 修改了一下yinj_serial_status表的字符集
 
@@ -129,7 +129,7 @@ ALTER TABLE yinj_serial_status CONVERT TO CHARACTER SET utf8 COLLATE utf8_genera
 
 再看一下该SQL的执行计划走了相应的索引，而idx_fuhrq因为时间范围覆盖了全表，走全表扫描也是正常。
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/SqlPlan2.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/SqlPlan2.png)
 
 整条SQL执行完成只需0.5s，再看一下SHOW WARNINGS没有再进行字符集的转换
 

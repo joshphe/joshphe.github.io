@@ -1,7 +1,7 @@
 ---
 title: Oracle数据库日常操作
 date: 2021-01-22 19:25:00
-img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/ice.png  #设置本地图片
+img: https://gitee.com/Qzjp/pics/raw/master/2022/ice.png  #设置本地图片
 summary: 记录自己Oracle数据库日常操作
 tags:
   - Oracle

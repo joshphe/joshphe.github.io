@@ -1,7 +1,7 @@
 ---
 title: Log4j 1.x版本高并发引发BLOCKED死锁
 date: 2021-05-13 19:25:00
-img: https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/beach.png  #设置本地图片
+img: https://gitee.com/Qzjp/pics/raw/master/2022/beach.png  #设置本地图片
 summary: Log4j 1.x版本高并发BLOCKED死锁
 tags:
   - log4j
@@ -353,8 +353,8 @@ synchronized (sw) {
 ```
 因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/picture1.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/picture1.png)
 
-![](https://cdn.jsdelivr.net/gh/joshphe/blogImage@main/img/picture2.png)
+![](https://gitee.com/Qzjp/pics/raw/master/2022/picture2.png)
 
 测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。
