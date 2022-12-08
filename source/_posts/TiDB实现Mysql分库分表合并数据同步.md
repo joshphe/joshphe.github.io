@@ -1,7 +1,7 @@
 ---
 title: TiDB 实现 Mysql 分库分表合并数据同步
 date: 2022-12-05 19:25:00
-img: https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/sea.png  #设置本地图片
+img: https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/202212081003344.jpg  #设置本地图片
 summary: TiDB 实现 Mysql 分库分表合并数据同步
 tags:
   - TiDB
@@ -52,7 +52,7 @@ dmctl 是用来控制 DM 集群的命令行工具。
 
 ### 二、分库同步
 
-![1611218263907](C:\Users\Aurora\AppData\Roaming\Typora\typora-user-images\1611218263907.png)
+![](https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/202212081004553.png)
 
 在上图的例子中，分表的合库合表过程简化成了上游只有两个 MySQL 实例，每个实例内只有一个表。假设在数据迁移开始时，将两个分表的表结构版本记为 schema V1，将 DDL 语句执行完后的表结构版本记为 schema V2。
 
