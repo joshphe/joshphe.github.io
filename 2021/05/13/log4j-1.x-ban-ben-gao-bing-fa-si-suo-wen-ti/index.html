@@ -1,0 +1,1227 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Log4j 1.x版本高并发引发BLOCKED死锁, 暮光之城">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Log4j 1.x版本高并发引发BLOCKED死锁 | 暮光之城</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="暮光之城" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+
+   <style>
+    body{
+       background-image: url(https://cdn.jsdelivr.net/gh/Tokisaki-Galaxy/res/site/medias/background.jpg);
+       background-repeat:no-repeat;
+       background-size:cover;
+       background-attachment:fixed;
+    }
+</style>
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">暮光之城</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">暮光之城</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/beach.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Log4j 1.x版本高并发引发BLOCKED死锁</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/log4j/">
+                                <span class="chip bg-color">log4j</span>
+                            </a>
+                        
+                            <a href="/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">
+                                <span class="chip bg-color">高并发</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%AD%BB%E9%94%81/">
+                                <span class="chip bg-color">死锁</span>
+                            </a>
+                        
+                            <a href="/tags/BLOCKED/">
+                                <span class="chip bg-color">BLOCKED</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2021-05-13
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题"><a href="#Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题" class="headerlink" title="Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题"></a>Log4j 1.x版本高并发情况下引发BLOCKED死锁的问题</h2><p>应用系统使用Apache log4j-1.2.16版本的jar包，系统在某一天运行过程中服务宕机，通过jstack命令可以发现大量死锁：</p>
+<pre class=" language-java"><code class="language-java"><span class="token string">"http-processor732"</span> #<span class="token number">79018</span> daemon prio<span class="token operator">=</span><span class="token number">5</span> os_prio<span class="token operator">=</span><span class="token number">0</span> tid<span class="token operator">=</span><span class="token number">0x000000001b26c000</span> nid<span class="token operator">=</span><span class="token number">0x2c64</span> waiting <span class="token keyword">for</span> monitor entry <span class="token punctuation">[</span><span class="token number">0x0000000059c3d000</span><span class="token punctuation">]</span>
+   java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Thread<span class="token punctuation">.</span>State<span class="token operator">:</span> <span class="token function">BLOCKED</span> <span class="token punctuation">(</span>on object monitor<span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Category<span class="token punctuation">.</span><span class="token function">callAppenders</span><span class="token punctuation">(</span>Category<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">204</span><span class="token punctuation">)</span>
+    <span class="token operator">-</span> waiting to lock <span class="token operator">&lt;</span><span class="token number">0x00000007209cfa80</span><span class="token operator">></span> <span class="token punctuation">(</span>a org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Logger<span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBULogger<span class="token punctuation">.</span><span class="token function">callAppendersDirect</span><span class="token punctuation">(</span>CCBULogger<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">210</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBULogger<span class="token punctuation">.</span><span class="token function">forcedCCBUTrace</span><span class="token punctuation">(</span>CCBULogger<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">167</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>ServiceabilityManager<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span>ServiceabilityManager<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2360</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>ServiceabilityManager<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span>ServiceabilityManager<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2461</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>ServiceabilityManager<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span>ServiceabilityManager<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2446</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>core<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>SvcMgrUtil<span class="token punctuation">.</span><span class="token function">trace</span><span class="token punctuation">(</span>SvcMgrUtil<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">110</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>server<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>Controller<span class="token punctuation">.</span><span class="token function">newCall</span><span class="token punctuation">(</span>Controller<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1697</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>server<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>Controller<span class="token punctuation">.</span><span class="token function">doPost</span><span class="token punctuation">(</span>Controller<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1002</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>server<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>Controller<span class="token punctuation">.</span><span class="token function">doGet</span><span class="token punctuation">(</span>Controller<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">546</span><span class="token punctuation">)</span>
+    at javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServlet<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>HttpServlet<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">634</span><span class="token punctuation">)</span>
+    at javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServlet<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>HttpServlet<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">741</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">internalDoFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">231</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">166</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>websocket<span class="token punctuation">.</span>server<span class="token punctuation">.</span>WsFilter<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>WsFilter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">53</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">internalDoFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">193</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">166</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardWrapperValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardWrapperValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">199</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardContextValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardContextValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">96</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>authenticator<span class="token punctuation">.</span>AuthenticatorBase<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>AuthenticatorBase<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">494</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardHostValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardHostValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">139</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>valves<span class="token punctuation">.</span>ErrorReportValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>ErrorReportValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">92</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardEngineValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardEngineValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">87</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>connector<span class="token punctuation">.</span>CoyoteAdapter<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>CoyoteAdapter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">343</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>http11<span class="token punctuation">.</span>Http11Processor<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>Http11Processor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">412</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>AbstractProcessorLight<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span>AbstractProcessorLight<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">66</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>AbstractProtocol$ConnectionHandler<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span>AbstractProtocol<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">754</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>NioEndpoint$SocketProcessor<span class="token punctuation">.</span><span class="token function">doRun</span><span class="token punctuation">(</span>NioEndpoint<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1385</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>SocketProcessorBase<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>SocketProcessorBase<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">49</span><span class="token punctuation">)</span>
+    <span class="token operator">-</span> locked <span class="token operator">&lt;</span><span class="token number">0x00000007292e6cc0</span><span class="token operator">></span> <span class="token punctuation">(</span>a org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>NioEndpoint$NioSocketWrapper<span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>ThreadPoolExecutor<span class="token punctuation">.</span><span class="token function">runWorker</span><span class="token punctuation">(</span>ThreadPoolExecutor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1149</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>ThreadPoolExecutor$Worker<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>ThreadPoolExecutor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">624</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>threads<span class="token punctuation">.</span>TaskThread$WrappingRunnable<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>TaskThread<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">61</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Thread<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">748</span><span class="token punctuation">)</span></code></pre>
+<p>查看引发死锁线程如下：</p>
+<pre class=" language-java"><code class="language-java"><span class="token string">"http-processor161"</span> #<span class="token number">78384</span> daemon prio<span class="token operator">=</span><span class="token number">5</span> os_prio<span class="token operator">=</span><span class="token number">0</span> tid<span class="token operator">=</span><span class="token number">0x0000000041dad000</span> nid<span class="token operator">=</span><span class="token number">0x3bf8</span> runnable <span class="token punctuation">[</span><span class="token number">0x000000005cc3c000</span><span class="token punctuation">]</span>
+   java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Thread<span class="token punctuation">.</span>State<span class="token operator">:</span> RUNNABLE
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>locale<span class="token punctuation">.</span>provider<span class="token punctuation">.</span>LocaleProviderAdapter<span class="token punctuation">.</span><span class="token function">isSupportedLocale</span><span class="token punctuation">(</span>LocaleProviderAdapter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">299</span><span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>resources<span class="token punctuation">.</span>LocaleData$LocaleDataResourceBundleControl<span class="token punctuation">.</span><span class="token function">getCandidateLocales</span><span class="token punctuation">(</span>LocaleData<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">218</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>ResourceBundle<span class="token punctuation">.</span><span class="token function">getBundleImpl</span><span class="token punctuation">(</span>ResourceBundle<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1365</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>ResourceBundle<span class="token punctuation">.</span><span class="token function">getBundle</span><span class="token punctuation">(</span>ResourceBundle<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">899</span><span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>resources<span class="token punctuation">.</span>LocaleData$<span class="token number">1</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>LocaleData<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">167</span><span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>resources<span class="token punctuation">.</span>LocaleData$<span class="token number">1</span><span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>LocaleData<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">163</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>security<span class="token punctuation">.</span>AccessController<span class="token punctuation">.</span><span class="token function">doPrivileged</span><span class="token punctuation">(</span>Native Method<span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>resources<span class="token punctuation">.</span>LocaleData<span class="token punctuation">.</span><span class="token function">getBundle</span><span class="token punctuation">(</span>LocaleData<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">163</span><span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>resources<span class="token punctuation">.</span>LocaleData<span class="token punctuation">.</span><span class="token function">getDateFormatData</span><span class="token punctuation">(</span>LocaleData<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">127</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>DateFormatSymbols<span class="token punctuation">.</span><span class="token function">initializeData</span><span class="token punctuation">(</span>DateFormatSymbols<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">710</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>DateFormatSymbols<span class="token punctuation">.</span>&lt;init<span class="token operator">></span><span class="token punctuation">(</span>DateFormatSymbols<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">145</span><span class="token punctuation">)</span>
+    at sun<span class="token punctuation">.</span>util<span class="token punctuation">.</span>locale<span class="token punctuation">.</span>provider<span class="token punctuation">.</span>DateFormatSymbolsProviderImpl<span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span>DateFormatSymbolsProviderImpl<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">85</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>DateFormatSymbols<span class="token punctuation">.</span><span class="token function">getProviderInstance</span><span class="token punctuation">(</span>DateFormatSymbols<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">364</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>DateFormatSymbols<span class="token punctuation">.</span><span class="token function">getInstance</span><span class="token punctuation">(</span>DateFormatSymbols<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">340</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>Calendar<span class="token punctuation">.</span><span class="token function">getDisplayName</span><span class="token punctuation">(</span>Calendar<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2110</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>SimpleDateFormat<span class="token punctuation">.</span><span class="token function">subFormat</span><span class="token punctuation">(</span>SimpleDateFormat<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1125</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>SimpleDateFormat<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>SimpleDateFormat<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">966</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>SimpleDateFormat<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>SimpleDateFormat<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">936</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>text<span class="token punctuation">.</span>DateFormat<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>DateFormat<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">345</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>helpers<span class="token punctuation">.</span>PatternParser$DatePatternConverter<span class="token punctuation">.</span><span class="token function">convert</span><span class="token punctuation">(</span>PatternParser<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">443</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>helpers<span class="token punctuation">.</span>PatternConverter<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>PatternConverter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">65</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>PatternLayout<span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span>PatternLayout<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">506</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBUSyslogAppender<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span>CCBUSyslogAppender<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">247</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>AppenderSkeleton<span class="token punctuation">.</span><span class="token function">doAppend</span><span class="token punctuation">(</span>AppenderSkeleton<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">251</span><span class="token punctuation">)</span>
+    <span class="token operator">-</span> locked <span class="token operator">&lt;</span><span class="token number">0x00000007212a16d8</span><span class="token operator">></span> <span class="token punctuation">(</span>a com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBUSyslogAppender<span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>helpers<span class="token punctuation">.</span>AppenderAttachableImpl<span class="token punctuation">.</span><span class="token function">appendLoopOnAppenders</span><span class="token punctuation">(</span>AppenderAttachableImpl<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">66</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Category<span class="token punctuation">.</span><span class="token function">callAppenders</span><span class="token punctuation">(</span>Category<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">206</span><span class="token punctuation">)</span>
+    <span class="token operator">-</span> locked <span class="token operator">&lt;</span><span class="token number">0x00000007209cfa80</span><span class="token operator">></span> <span class="token punctuation">(</span>a org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>log4j<span class="token punctuation">.</span>Logger<span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBULogger<span class="token punctuation">.</span><span class="token function">callAppendersDirect</span><span class="token punctuation">(</span>CCBULogger<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">210</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>logging<span class="token punctuation">.</span>CCBULogger<span class="token punctuation">.</span><span class="token function">forcedCCBULog</span><span class="token punctuation">(</span>CCBULogger<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">153</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>ServiceabilityManager<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>ServiceabilityManager<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2222</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>cisco<span class="token punctuation">.</span>ccbu<span class="token punctuation">.</span>infra<span class="token punctuation">.</span>serviceability<span class="token punctuation">.</span>ServiceabilityManager<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span>ServiceabilityManager<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">2706</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>server<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>Controller<span class="token punctuation">.</span><span class="token function">doPost</span><span class="token punctuation">(</span>Controller<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">750</span><span class="token punctuation">)</span>
+    at com<span class="token punctuation">.</span>audium<span class="token punctuation">.</span>server<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>Controller<span class="token punctuation">.</span><span class="token function">doGet</span><span class="token punctuation">(</span>Controller<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">546</span><span class="token punctuation">)</span>
+    at javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServlet<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>HttpServlet<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">634</span><span class="token punctuation">)</span>
+    at javax<span class="token punctuation">.</span>servlet<span class="token punctuation">.</span>http<span class="token punctuation">.</span>HttpServlet<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>HttpServlet<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">741</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">internalDoFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">231</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">166</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>websocket<span class="token punctuation">.</span>server<span class="token punctuation">.</span>WsFilter<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>WsFilter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">53</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">internalDoFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">193</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>ApplicationFilterChain<span class="token punctuation">.</span><span class="token function">doFilter</span><span class="token punctuation">(</span>ApplicationFilterChain<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">166</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardWrapperValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardWrapperValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">199</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardContextValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardContextValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">96</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>authenticator<span class="token punctuation">.</span>AuthenticatorBase<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>AuthenticatorBase<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">494</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardHostValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardHostValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">139</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>valves<span class="token punctuation">.</span>ErrorReportValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>ErrorReportValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">92</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>core<span class="token punctuation">.</span>StandardEngineValve<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>StandardEngineValve<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">87</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>catalina<span class="token punctuation">.</span>connector<span class="token punctuation">.</span>CoyoteAdapter<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>CoyoteAdapter<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">343</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>http11<span class="token punctuation">.</span>Http11Processor<span class="token punctuation">.</span><span class="token function">service</span><span class="token punctuation">(</span>Http11Processor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">412</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>AbstractProcessorLight<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span>AbstractProcessorLight<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">66</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>coyote<span class="token punctuation">.</span>AbstractProtocol$ConnectionHandler<span class="token punctuation">.</span><span class="token function">process</span><span class="token punctuation">(</span>AbstractProtocol<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">754</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>NioEndpoint$SocketProcessor<span class="token punctuation">.</span><span class="token function">doRun</span><span class="token punctuation">(</span>NioEndpoint<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1385</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>SocketProcessorBase<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>SocketProcessorBase<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">49</span><span class="token punctuation">)</span>
+    <span class="token operator">-</span> locked <span class="token operator">&lt;</span><span class="token number">0x0000000728e76c80</span><span class="token operator">></span> <span class="token punctuation">(</span>a org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>net<span class="token punctuation">.</span>NioEndpoint$NioSocketWrapper<span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>ThreadPoolExecutor<span class="token punctuation">.</span><span class="token function">runWorker</span><span class="token punctuation">(</span>ThreadPoolExecutor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">1149</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>concurrent<span class="token punctuation">.</span>ThreadPoolExecutor$Worker<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>ThreadPoolExecutor<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">624</span><span class="token punctuation">)</span>
+    at org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>tomcat<span class="token punctuation">.</span>util<span class="token punctuation">.</span>threads<span class="token punctuation">.</span>TaskThread$WrappingRunnable<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>TaskThread<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">61</span><span class="token punctuation">)</span>
+    at java<span class="token punctuation">.</span>lang<span class="token punctuation">.</span>Thread<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>Thread<span class="token punctuation">.</span>java<span class="token operator">:</span><span class="token number">748</span><span class="token punctuation">)</span></code></pre>
+<p>==at org.apache.log4j.Category.callAppenders(Category.java:206)==</p>
+<p>​    ==locked &lt;0x00000007209cfa80&gt; (a org.apache.log4j.Logger)==</p>
+<p>通过日志可以大致看出问题是出在org.apache.log4j.Category.callAppenders方法中：</p>
+<pre class=" language-java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">callAppenders</span><span class="token punctuation">(</span>LoggingEvent event<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">int</span> writes <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>Category c <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span> c <span class="token operator">!=</span> null<span class="token punctuation">;</span> c <span class="token operator">=</span> c<span class="token punctuation">.</span>parent<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>c<span class="token punctuation">.</span>aai <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          writes <span class="token operator">+=</span> c<span class="token punctuation">.</span>aai<span class="token punctuation">.</span><span class="token function">appendLoopOnAppenders</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>c<span class="token punctuation">.</span>additive<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>writes <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>repository<span class="token punctuation">.</span><span class="token function">emitNoAppenderWarning</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>代码中可以看到该方法中使用了synchronized，synchronized是一个重量级锁，它会降低程序性能，被synchronized关键字声明的对象和代码块被视为临界区，当某个线程调用该对象的synchronized方法或者代码块时，便获取了该对象的锁，其他线程若要访问则需要等待，该方法中使用了appendLoopOnAppenders(event)方法：</p>
+<pre class=" language-java"><code class="language-java">  <span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">appendLoopOnAppenders</span><span class="token punctuation">(</span>LoggingEvent event<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">int</span> size <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>appenderList <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      size <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>appenderList<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> size<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Appender appender <span class="token operator">=</span> <span class="token punctuation">(</span>Appender<span class="token punctuation">)</span><span class="token keyword">this</span><span class="token punctuation">.</span>appenderList<span class="token punctuation">.</span><span class="token function">elementAt</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        appender<span class="token punctuation">.</span><span class="token function">doAppend</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> size<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>在该方法中，调用了doAppend(event)方法来追加日志输出，AppenderSkeleton类实现了Appender这个接口：</p>
+<pre class=" language-java"><code class="language-java">  <span class="token keyword">public</span> <span class="token keyword">synchronized</span> <span class="token keyword">void</span> <span class="token function">doAppend</span><span class="token punctuation">(</span>LoggingEvent event<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>closed<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      LogLog<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"Attempted to append to closed appender named ["</span> <span class="token operator">+</span> <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">+</span> <span class="token string">"]."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isAsSevereAsThreshold</span><span class="token punctuation">(</span>event<span class="token punctuation">.</span><span class="token function">getLevel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    Filter f <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>headFilter<span class="token punctuation">;</span>
+
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>f <span class="token operator">!=</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">switch</span> <span class="token punctuation">(</span>f<span class="token punctuation">.</span><span class="token function">decide</span><span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">case</span> <span class="token operator">-</span><span class="token number">1</span><span class="token operator">:</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">1</span><span class="token operator">:</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">0</span><span class="token operator">:</span>
+        f <span class="token operator">=</span> f<span class="token punctuation">.</span><span class="token function">getNext</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>doAppend方法上也加了synchronized锁，因此在有线程持有该方法的锁时，其他线程在调用该方法时需等待锁被释放后才能进行日志输出，因此在高并发的情况下很容易产生死锁的情况。</p>
+<p>此时，大致找到死锁产生的原因后，考虑到应用系统属于多年来稳定运行的系统，升级log4j 2.x需要考虑到的因素比较多，临时解决这个问题则需要从日志并发量角度考虑：</p>
+<ol>
+<li><h5 id="尽量输出有效日志，减少无用日志的输出。"><a href="#尽量输出有效日志，减少无用日志的输出。" class="headerlink" title="尽量输出有效日志，减少无用日志的输出。"></a>尽量输出有效日志，减少无用日志的输出。</h5></li>
+<li><h5 id="调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。"><a href="#调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。" class="headerlink" title="调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。"></a>调整日志输出级别，一般开启info级别，必要情况下再提高日志输出级别。</h5></li>
+<li><h5 id="条件允许的情况下升级log4j版本。"><a href="#条件允许的情况下升级log4j版本。" class="headerlink" title="条件允许的情况下升级log4j版本。"></a>条件允许的情况下升级log4j版本。</h5></li>
+</ol>
+<p>在此之前另一个系统碰到类似的log4j导致的性能问题，log4j配置如下：</p>
+<pre class=" language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.primeton.ext.common.logging.AppRollingFileAppender<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ROLLING_FILE_BS<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+
+        <span class="token comment" spellcheck="true">&lt;!--&lt;param name="Threshold" value="INFO"/>--></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Encoding<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>UTF-8<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>File<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>logs/bs.log<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Append<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>MaxFileSize<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>10MB<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>MaxBackupIndex<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>200<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>layout</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.apache.log4j.PatternLayout<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ConversionPattern<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>[%d{yyyy-MM-dd HH:mm:ss,SSS}][%p][%C:%L] %m%n<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>layout</span><span class="token punctuation">></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ROLLING_FILE_BS_SYN<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>org.apache.log4j.AsyncAppender<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>BufferSize<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>8192<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>param</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>LocationInfo<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ROLLING_FILE_BS<span class="token punctuation">"</span></span><span class="token punctuation">/></span></span>
+
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">></span></span></code></pre>
+<param name="LocationInfo" value="true">
+
+<p>该配置作用是输出java文件名称和行号，默认为false。</p>
+<p>在jar包中定位LocationInfo类的代码如下：</p>
+<pre class=" language-java"><code class="language-java">  <span class="token keyword">public</span> <span class="token function">LocationInfo</span><span class="token punctuation">(</span>Throwable t<span class="token punctuation">,</span> String fqnOfCallingClass<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>t <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">(</span>fqnOfCallingClass <span class="token operator">==</span> null<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>getLineNumberMethod <span class="token operator">!=</span> null<span class="token punctuation">)</span>
+      <span class="token keyword">try</span> <span class="token punctuation">{</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> noArgs <span class="token operator">=</span> null<span class="token punctuation">;</span>
+        Object<span class="token punctuation">[</span><span class="token punctuation">]</span> elements <span class="token operator">=</span> <span class="token punctuation">(</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">(</span>Object<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>getStackTraceMethod<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>t<span class="token punctuation">,</span> noArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        String prevClass <span class="token operator">=</span> <span class="token string">"?"</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> elements<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          String thisClass <span class="token operator">=</span> <span class="token punctuation">(</span>String<span class="token punctuation">)</span>getClassNameMethod<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>elements<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> noArgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>fqnOfCallingClass<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>thisClass<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">int</span> caller <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>caller <span class="token operator">&lt;</span> elements<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>className <span class="token operator">=</span> prevClass<span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>methodName <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>String<span class="token punctuation">)</span>getMethodNameMethod<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>elements<span class="token punctuation">[</span>caller<span class="token punctuation">]</span><span class="token punctuation">,</span> noArgs<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>fileName <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>String<span class="token punctuation">)</span>getFileNameMethod<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>elements<span class="token punctuation">[</span>caller<span class="token punctuation">]</span><span class="token punctuation">,</span> noArgs<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>fileName <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">this</span><span class="token punctuation">.</span>fileName <span class="token operator">=</span> <span class="token string">"?"</span><span class="token punctuation">;</span>
+              <span class="token punctuation">}</span>
+              <span class="token keyword">int</span> line <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>Integer<span class="token punctuation">)</span>getLineNumberMethod<span class="token punctuation">.</span><span class="token function">invoke</span><span class="token punctuation">(</span>elements<span class="token punctuation">[</span>caller<span class="token punctuation">]</span><span class="token punctuation">,</span> noArgs<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">intValue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span>line <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+                <span class="token keyword">this</span><span class="token punctuation">.</span>lineNumber <span class="token operator">=</span> <span class="token string">"?"</span><span class="token punctuation">;</span>
+              <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token keyword">this</span><span class="token punctuation">.</span>lineNumber <span class="token operator">=</span> String<span class="token punctuation">.</span><span class="token function">valueOf</span><span class="token punctuation">(</span>line<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token punctuation">}</span>
+              StringBuffer buf <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">StringBuffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>className<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>methodName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">"("</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>fileName<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>lineNumber<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              buf<span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token string">")"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>fullInfo <span class="token operator">=</span> buf<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span>
+          prevClass <span class="token operator">=</span> thisClass<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">IllegalAccessException</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        LogLog<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"LocationInfo failed using JDK 1.4 methods"</span><span class="token punctuation">,</span> ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InvocationTargetException</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>ex<span class="token punctuation">.</span><span class="token function">getTargetException</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">instanceof</span> <span class="token class-name">InterruptedException</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ex<span class="token punctuation">.</span><span class="token function">getTargetException</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">instanceof</span> <span class="token class-name">InterruptedIOException</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+          Thread<span class="token punctuation">.</span><span class="token function">currentThread</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">interrupt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        LogLog<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"LocationInfo failed using JDK 1.4 methods"</span><span class="token punctuation">,</span> ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">RuntimeException</span> ex<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        LogLog<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><span class="token string">"LocationInfo failed using JDK 1.4 methods"</span><span class="token punctuation">,</span> ex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    String s<span class="token punctuation">;</span>
+    <span class="token keyword">synchronized</span> <span class="token punctuation">(</span>sw<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      t<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span>pw<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      s <span class="token operator">=</span> sw<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      sw<span class="token punctuation">.</span><span class="token function">getBuffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setLength</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">int</span> ibegin <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span>fqnOfCallingClass<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ibegin <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>ibegin <span class="token operator">+</span> fqnOfCallingClass<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> s<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>s<span class="token punctuation">.</span><span class="token function">charAt</span><span class="token punctuation">(</span>ibegin <span class="token operator">+</span> fqnOfCallingClass<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">int</span> i <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span>fqnOfCallingClass <span class="token operator">+</span> <span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        ibegin <span class="token operator">=</span> i<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+
+    <span class="token punctuation">}</span>
+
+    ibegin <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>Layout<span class="token punctuation">.</span>LINE_SEP<span class="token punctuation">,</span> ibegin<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ibegin <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    ibegin <span class="token operator">+=</span> Layout<span class="token punctuation">.</span>LINE_SEP_LEN<span class="token punctuation">;</span>
+
+    <span class="token keyword">int</span> iend <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>Layout<span class="token punctuation">.</span>LINE_SEP<span class="token punctuation">,</span> ibegin<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>iend <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>inVisualAge<span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      ibegin <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">lastIndexOf</span><span class="token punctuation">(</span><span class="token string">"at "</span><span class="token punctuation">,</span> iend<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>ibegin <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      ibegin <span class="token operator">+=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>fullInfo <span class="token operator">=</span> s<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>ibegin<span class="token punctuation">,</span> iend<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>可以看到有一块代码也加了synchronized锁，再通过打印堆栈来获取行号信息，因此评估该方法在高并发的情况下也会造成性能问题</p>
+<pre class=" language-java"><code class="language-java">String s<span class="token punctuation">;</span>
+<span class="token keyword">synchronized</span> <span class="token punctuation">(</span>sw<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  t<span class="token punctuation">.</span><span class="token function">printStackTrace</span><span class="token punctuation">(</span>pw<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  s <span class="token operator">=</span> sw<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  sw<span class="token punctuation">.</span><span class="token function">getBuffer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setLength</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>因此在ConversionPattern配置中将%L去掉，先后测试的数据如下：</p>
+<p><img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/picture1.png" alt></p>
+<p><img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/picture2.png" alt></p>
+<p>测试相对比较简单，数据不具有绝对的参考性，但可以大致看出locationinfo的参数配置在一定情况下也会带来性能问题。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/log4j/">
+                                    <span class="chip bg-color">log4j</span>
+                                </a>
+                            
+                                <a href="/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/">
+                                    <span class="chip bg-color">高并发</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%AD%BB%E9%94%81/">
+                                    <span class="chip bg-color">死锁</span>
+                                </a>
+                            
+                                <a href="/tags/BLOCKED/">
+                                    <span class="chip bg-color">BLOCKED</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="qq,qzone,wechat" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2021/05/13/left-join-wei-shi-yong-suo-yin/">
+                    <div class="card-image">
+                        
+                        <img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/sea.png" class="responsive-img" alt="Left join未使用索引">
+                        
+                        <span class="card-title">Left join未使用索引</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Mysql数据库字符集差异导致索引失效
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-05-13
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            JinPeng Wang
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/left-join/">
+                        <span class="chip bg-color">left join</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%B4%A2%E5%BC%95/">
+                        <span class="chip bg-color">索引</span>
+                    </a>
+                    
+                    <a href="/tags/Mysql/">
+                        <span class="chip bg-color">Mysql</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/">
+                        <span class="chip bg-color">字符集</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2021/01/22/mysql-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/">
+                    <div class="card-image">
+                        
+                        <img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/mokuc.png" class="responsive-img" alt="MySQL数据库设计开发规范">
+                        
+                        <span class="card-title">MySQL数据库设计开发规范</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Mysql数据库设计约束
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-01-22
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            JinPeng Wang
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/MySQL/">
+                        <span class="chip bg-color">MySQL</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/">
+                        <span class="chip bg-color">开发规范</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+    <div class="container row center-align" style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2020-2023</span>
+            
+            <span id="year">2020</span>
+            <a href="/about" target="_blank">JinPeng Wang</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/joshphe" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:784118046@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=784118046@qq.com" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 784118046@qq.com" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+	
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

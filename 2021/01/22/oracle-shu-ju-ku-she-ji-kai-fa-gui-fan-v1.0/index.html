@@ -1,0 +1,1000 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Oracle数据库设计开发规范, 暮光之城">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>Oracle数据库设计开发规范 | 暮光之城</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+
+    <script src="/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 4.2.1"><link rel="alternate" href="/atom.xml" title="暮光之城" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+
+   <style>
+    body{
+       background-image: url(https://cdn.jsdelivr.net/gh/Tokisaki-Galaxy/res/site/medias/background.jpg);
+       background-repeat:no-repeat;
+       background-size:cover;
+       background-attachment:fixed;
+    }
+</style>
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">暮光之城</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">暮光之城</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/aurora.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">Oracle数据库设计开发规范</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/">
+                                <span class="chip bg-color">开发规范</span>
+                            </a>
+                        
+                            <a href="/tags/Oracle/">
+                                <span class="chip bg-color">Oracle</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2021-01-22
+                </div>
+                
+
+                
+
+                
+
+                
+
+                
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="Oracle-数据库设计约束："><a href="#Oracle-数据库设计约束：" class="headerlink" title="Oracle 数据库设计约束："></a>Oracle 数据库设计约束：</h3><h4 id="一、建表约束"><a href="#一、建表约束" class="headerlink" title="一、建表约束"></a>一、建表约束</h4><p>【强制】对于流水表，若记录数超过1000W行以上，应使用分区表（parition）</p>
+<p><strong>解读：</strong>大表使用分区表可以有效提高查询性能，便于数据清理。若其他大表有性能需要，也可以使用分区技术。</p>
+<p>【强制】 表记录长度不能超过1个 block/page</p>
+<p><strong>解读：</strong>表记录超长对数据库性能会有影响，若单条记录仅仅超出一点，还会产生较大的空间浪费。</p>
+<p>【强制】 大型数据库，应该为应用建立专门的表空间，数据与索引表空间分开，流水表与历史表应设立专用表空间</p>
+<p><strong>解读：</strong>针对大型数据库，交易表、流水表、历史表应开辟专用的表空间。在数据迁移、备份恢复过程中以表空间为单位，具备以下优点：</p>
+<p>1）便于数据迁移；</p>
+<p>2）便于构造小的测试环境；</p>
+<p>3）便于构造小的容灾环境。</p>
+<p>大表建议拆分为交易表、历史表，结合多表空间存放，可有效降低触发全表扫描时的性能问题，提高交易性能；降低数据清理对交易的影响。</p>
+<p>【强制】 应用用户没有授予管理员权限</p>
+<p><strong>解读：</strong>严格的权限管理能有效避免不必要的操作失误。</p>
+<p>【强制】 生产环境建表或表插入时，禁止使用 nologging 选项</p>
+<p><strong>解读：</strong>该操作会导致数据库恢复时出现坏块，导致表无法使用。</p>
+<p>【强制】 对分区表进行维护后，需要重建全局索引</p>
+<p><strong>解读：</strong>对分区进行维护后全局索引会失效。</p>
+<p>【强制】建表时需要用 comment 语句对表和字段增加注释</p>
+<p><strong>解读：</strong>规范的建表和注释便于后续维护和管理。</p>
+<p>【强制】sequence 应该设置 cache 为1000以上，并设置为 noorder</p>
+<p><strong>解读：</strong>针对高并发系统，若对 Sequence 没有严格的序号要求，应设置 cache 为1000以上，缺省的序列 Cache 值为20，无法满足高并发要求。</p>
+<p>【建议】高并发 OLTP 交易系统尽量避免使用大字段（BLOB、CLOB、LONG）</p>
+<p><strong>解读：</strong>因 LOB 字段结构特点，高并发系统中 LOB 字段时长出现导致系统运行缓慢的问题。被删除或更新的BLOB字段所占用空间不会自动批量回收，若表存在大量删除、更新操作时，BLOB 所在 Segments 会迅速耗尽空间，新的INSERT需要空间时，会在高水位线上加锁后，回收曾使用但已经过期的BLOB空间，因该操作效率很低，数据库会有大量的 ‘enq:HW - contention’ 等待，相关 SQL 会由于该等待而串行执行，业务受影响十分严重。</p>
+<hr>
+<h4 id="二、SQL约束"><a href="#二、SQL约束" class="headerlink" title="二、SQL约束"></a>二、SQL约束</h4><p>【强制】where 条件里的过滤字段上禁止使用函数</p>
+<p><strong>解读：</strong>在 sql 的 where 子句中带有索引的列使用函数时，优化器会忽略掉索引导致索引失效。建议将函数应用在条件上，索引是可以生效的。</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> staff <span class="token keyword">where</span> trunc<span class="token punctuation">(</span>birthdate<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token string">'01-MAY-82'</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//不会用到索引</span>
+
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> staff <span class="token keyword">where</span> birthdate <span class="token operator">&lt;</span> <span class="token punctuation">(</span>to_date<span class="token punctuation">(</span><span class="token string">'01-MAY-82'</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">0.9999</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//会使用索引</span></code></pre>
+<p>【强制】禁止使用 LIKE ‘%_’进行模糊匹配查询</p>
+<p><strong>解读：</strong>对字段使用like模糊匹配时，如果不从字段的第一位开始，将无法使用索引，禁止使用。</p>
+<pre class=" language-sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> student <span class="token keyword">where</span> name <span class="token operator">like</span> <span class="token string">'aaa%'</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//'aaa%' 会用到索引</span>
+
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> student <span class="token keyword">where</span> name <span class="token operator">like</span> <span class="token string">'%aaa'</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">//'%aaa' 或者 '_aaa' 不会使用索引</span></code></pre>
+<p>【强制】绑定变量和字段数据类型需要保持一致</p>
+<p><strong>解读：</strong>字段定义和 SQL 绑定变量传进来的值的类型需要保持一致，否则会导致隐式转换无法使用索引。</p>
+<pre class=" language-sql"><code class="language-sql">例如：dept_id 是一个varchar2型的字段，但在查询时把该字段作为number类型以<span class="token keyword">where</span>条件传给Oracle<span class="token punctuation">,</span>这样会导致索引失效。
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token keyword">temp</span> <span class="token keyword">where</span> dept_id <span class="token operator">=</span> <span class="token number">33333333333</span> <span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//错误的例子</span>
+
+<span class="token keyword">select</span> <span class="token operator">*</span> <span class="token keyword">from</span> <span class="token keyword">temp</span> <span class="token keyword">where</span> dept_id <span class="token operator">=</span><span class="token string">'33333333333'</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//正确的例子</span></code></pre>
+<p>【强制】在查询中指定所需的列，不要直接使用 ‘*’ 返回所有的列</p>
+<p><strong>解读：</strong></p>
+<p>（1）在查询中使用 select * 时，需要多做一步查询内部系统目录以便把表中的所有字段名找出来。</p>
+<p>（2）明确字段名，将来在表增加字段的时候，不会导致程序报错。</p>
+<p>（3）读取不需要的列会增加 CPU、IO、NET 消耗。</p>
+<p>（4）无法有效的利用覆盖索引。</p>
+<p>【强制】变量和参数在类型和长度必须与表定义的列类型和长度匹配</p>
+<p><strong>解读：</strong>减少存储空间和 IO 资源的浪费，避免隐式转换而导致不使用索引的情况。</p>
+<p>【强制】SQL 语句中的表关联查询不允许超过5个，需要 join 的字段，数据类型必须绝对一致；多表关联查询时，保证被关联的字段需要有索引</p>
+<p><strong>解读：</strong>优化器对与多表连接查询的处理效果不佳，应尽可能减少多表连接的情况，关联字段需要有索引避免不必要的全表扫描，提高执行效率。</p>
+<p>【强制】禁止使用触发器</p>
+<p><strong>解读：</strong>考虑到降低数据库的复杂度，提高可维护性，减少不可预知的风险，禁止使用触发器。</p>
+<p>【强制】对于很大的表进行全表删除时，不允许使用全表 delete，应用 truncate 或 drop 重建</p>
+<p><strong>解读：</strong>delete 语句是 dml，该操作会放到 rollback segment 中，事务提交后才生效；delete 语句不影响表所占用的 extent，高水线（high watermark）保持原位置不动；而 truncate 会将高水线复位（回到最开始）。</p>
+<p>另外删除速度一般来说：drop &gt; truncate &gt; delete</p>
+<p>【强制】数据清理时，应分批提交降低事务长度，一般每个事务不得超过10万行</p>
+<p><strong>解读：</strong>单个事务过长容易造成数据库 undo 资源不足回滚。</p>
+<p>【强制】表在大量增删改操作后，特别是数据加载之后应立即做统计信息收集</p>
+<p><strong>解读：</strong>表在大量增删改操作后，统计信息不准确会导致 SQL 语句效率变差，影响性能。</p>
+<p>【强制】批量中使用的临时表，若一次导入大量数据进行批量处理，需要在导入大量数据之后，进行批量处理之前，手工进行统计信息收集</p>
+<p><strong>解读：</strong>收集统计信息，确保优化器提供的执行计划是最优的</p>
+<p>【强制】对分区表的访问需要带上分区键作为过滤条件</p>
+<p><strong>解读：</strong>对分区表的访问语句效率取决于 where 条件字段，使用分区键作为过滤条件才能有效利用分区表的机制。</p>
+<p>【强制】大批量插入删除更新需分批提交，更新记录数超过原表记录数10%或超过100W条，需在更新后手工收集统计信息</p>
+<p><strong>解读：</strong>大批量数据插入删除应分批提交，以免造成数据库 undo 资源不足回滚。在操作完成后需手工收集统计信息，确保统计信息的准确性。大批量数据删除后建议对空间实施回收或重组。</p>
+<p>【强制】使用 rownum 实现分页，应使用三层嵌套，并在最里层进行排序</p>
+<p><strong>解读：</strong></p>
+<p>【建议】针对存在大量 insert 和 delete 操作的表，应定期对索引进行重建</p>
+<p><strong>解读：</strong>表在大量 insert 和 delete 操作后，数据表会产生大量碎片，索引可能会很大，这类表需要考虑定期重建，以提高效率。</p>
+<p>【建议】OLTP 系统中 SQL 尽量使用绑定变量，批量系统中，语句过滤条件中的列对于不同取值记录分布不均匀，而是有较大偏差的情况下，应避免使用绑定变量</p>
+<p><strong>解读：</strong>SQL 在数据库的处理分为分析和执行两个步骤，不含非绑定变量的SQL只需要分析一次，含非绑定变量的 SQL 每次执行前都需要分析；在批量过程中，若语句过滤条件中的列对于不同取值记录分布不均匀，而是有较大偏差的情况下，使用绑定变量会导致不同的代入值选择同一执行计划，在很多情况下会导致糟糕的语句执行效率，应避免使用绑定变量，由 Oracle 根据不同取值重新解析生成执行计划更好。</p>
+<p>【建议】避免使用全表扫描</p>
+<p><strong>解读：</strong>对于小表或代码表的访问，全表扫描也许是合理的，其他情况下应尽量避免全表扫描，提高执行效率。</p>
+<hr>
+<h4 id="三、索引约束"><a href="#三、索引约束" class="headerlink" title="三、索引约束"></a>三、索引约束</h4><p>【强制】 分区表上如无特别原因不使用全局索引</p>
+<p><strong>解读：</strong>分区表使用 global index 或 local index 因根据实际的业务需要来设计，应尽量将业务需要统计的信息放在同一个分区中，使用 local index 使分区表的性能最大化。若需要使用 global index，需说明原因，对分区进行维护后全局索引会失效，应特别注意。</p>
+<p>【强制】 OLTP系统每张表索引不超过5个</p>
+<p><strong>解读：</strong>控制索引数量可以减少不必要的索引空间维护和使用，对于经常插入、更新、删除数据的表应减少索引数量，过多的索引会导致索引开销大，影响性能。</p>
+<p>【强制】 复合索引字段不超过3个，必须将区分度更高的字段放在左边</p>
+<p><strong>解读：</strong>复合索引的设计应综合考虑前缀性和可选性，索引字段不宜过多，应尽可能将区分度高，查询使用较频繁的字段放在左边，这样能够一开始就有效的过滤掉无用数据。在写 SQL 时，若WHERE条件中包含多个条件，应看表上是否有线程的联合索引可使用，注意各个条件的顺序应尽量和复合索引字段顺序一致。</p>
+<p>【强制】 没有重复索引（如 a 和 a,b 列都建了索引）</p>
+<p><strong>解读：</strong>避免在表上建立重复的索引如复合索引 (a,b) 和单列索引 a，降低索引的维护成本。</p>
+<p>【强制】 外键的子表关联字段上必须有索引</p>
+<p><strong>解读：</strong>如果使用了外键约束，子表的关联字段上必须创建索引，否则主表的每一条记录删除，都会导致对子表一次全表扫描。</p>
+<p>【强制】 创建和重建索引时，需要带 online 选项</p>
+<p><strong>解读：</strong>默认创建和重建索引时，会对原表上锁，影响表的更改、删除操作，需要带选项 online，即使增加了 online 选项，也应该避开业务高峰时操作。索引创建或重建完成后需要进行统计信息收集。</p>
+<p>【强制】 避免在更新频繁、区分度不高的列上单独建立索引</p>
+<p><strong>解读：</strong>区分度不高的列单独创建索引的优化效果很小，但是较为频繁的更新则会让索引的维护成本更高。</p>
+<hr>
+<h4 id="四、存储过程约束"><a href="#四、存储过程约束" class="headerlink" title="四、存储过程约束"></a>四、存储过程约束</h4><p>【强制】存储过程使用中必须要有异常捕获机制</p>
+<p><strong>解读：</strong>合理的异常捕获能够避免造成应用程序状态不明的问题，便于问题分析和定位。</p>
+<p>【强制】存储过程中如果打开了 dblink、cursor 等资源，在存储过程退出时必须关闭上述资源</p>
+<p><strong>解读：</strong>dblink session 在基于连接池的管理中可能会引起目标管理系统的 session 泛滥，消耗进程资源。 cursor 同理，在使用完毕后关闭游标，降低资源争用和浪费。</p>
+<hr>
+<h4 id="五、系统层级"><a href="#五、系统层级" class="headerlink" title="五、系统层级"></a>五、系统层级</h4><p>【强制】数据库长连接需要有手段检测异常中断，中断后应有重连机制</p>
+<p><strong>解读：</strong>提高资源利用率，确保应用在一定时间内有自我修复能力</p>
+<p>【强制】数据库连接字符串配置：列出所有 IP 地址</p>
+<p><strong>解读：</strong>确保能够实现失败转移功能</p>
+<p>【强制】数据库连接字符串配置：不使用物理 IP</p>
+<p><strong>解读：</strong>物理 IP 在服务器宕机后可能导致应用无法重连</p>
+<p>【强制】数据库连接字符串配置：开启 failover</p>
+<p><strong>解读：</strong>确保数据库集群中任何一个节点的故障不会影响用户使用，开启 failover 后，连接到故障节点的用户会被自动转移到健康节点。</p>
+<p>【强制】数据库连接字符串配置：关闭load balance</p>
+<p><strong>解读：</strong>实现只使用 RAC 一个实例，防止数据在两个节点之间大量传输，影响性能。</p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/">
+                                    <span class="chip bg-color">开发规范</span>
+                                </a>
+                            
+                                <a href="/tags/Oracle/">
+                                    <span class="chip bg-color">Oracle</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="qq,qzone,wechat" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2021/01/22/oracle-shu-ju-ku-ri-chang-cao-zuo-ji-lu/">
+                    <div class="card-image">
+                        
+                        <img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/ice.png" class="responsive-img" alt="Oracle数据库日常操作">
+                        
+                        <span class="card-title">Oracle数据库日常操作</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            记录自己Oracle数据库日常操作
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-01-22
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            JinPeng Wang
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%97%A5%E5%B8%B8/">
+                        <span class="chip bg-color">日常</span>
+                    </a>
+                    
+                    <a href="/tags/Oracle/">
+                        <span class="chip bg-color">Oracle</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                本篇&nbsp;<i class="far fa-dot-circle"></i>
+            </div>
+            <div class="card">
+                <a href="/2021/01/22/oracle-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/">
+                    <div class="card-image">
+                        
+                        <img src="https://joshphe-pics.oss-cn-shanghai.aliyuncs.com/pics/aurora.png" class="responsive-img" alt="Oracle数据库设计开发规范">
+                        
+                        <span class="card-title">Oracle数据库设计开发规范</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Oracle数据库设计约束
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-01-22
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            JinPeng Wang
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/">
+                        <span class="chip bg-color">开发规范</span>
+                    </a>
+                    
+                    <a href="/tags/Oracle/">
+                        <span class="chip bg-color">Oracle</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+    <div class="container row center-align" style="margin-bottom: 0px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2020-2023</span>
+            
+            <span id="year">2020</span>
+            <a href="/about" target="_blank">JinPeng Wang</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/joshphe" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:784118046@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=784118046@qq.com" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 784118046@qq.com" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+	
+    
+
+    
+
+    
+
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

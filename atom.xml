@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>暮光之城</title>
+  
+  
+  <link href="http://joshphe.top/atom.xml" rel="self"/>
+  
+  <link href="http://joshphe.top/"/>
+  <updated>2023-03-02T02:09:43.608Z</updated>
+  <id>http://joshphe.top/</id>
+  
+  <author>
+    <name>JinPeng Wang</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>TiDB 实现 Mysql 分库分表合并数据同步</title>
+    <link href="http://joshphe.top/2022/12/05/tidb-shi-xian-mysql-fen-ku-fen-biao-he-bing-shu-ju-tong-bu/"/>
+    <id>http://joshphe.top/2022/12/05/tidb-shi-xian-mysql-fen-ku-fen-biao-he-bing-shu-ju-tong-bu/</id>
+    <published>2022-12-05T11:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;TiDB实现Mysql分库分表合并数据同步&quot;&gt;&lt;a href=&quot;#TiDB实现Mysql分库分表合并数据同步&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="TiDB" scheme="http://joshphe.top/tags/TiDB/"/>
+    
+    <category term="数据同步" scheme="http://joshphe.top/tags/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>生僻字改造规划</title>
+    <link href="http://joshphe.top/2022/10/10/sheng-pi-zi-gai-zao-gui-hua/"/>
+    <id>http://joshphe.top/2022/10/10/sheng-pi-zi-gai-zao-gui-hua/</id>
+    <published>2022-10-10T10:30:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;生僻字改造规划&quot;&gt;&lt;a href=&quot;#生僻字改造规划&quot; class=&quot;headerlink&quot; title=&quot;生僻字改造规划&quot;&gt;&lt;/a&gt;生僻字改造规划&lt;/h1&gt;&lt;h2 id=&quot;一、概述&quot;&gt;&lt;a href=&quot;#一、概述&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="生僻字" scheme="http://joshphe.top/tags/%E7%94%9F%E5%83%BB%E5%AD%97/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>在线重定义</title>
+    <link href="http://joshphe.top/2022/01/17/zai-xian-chong-ding-yi/"/>
+    <id>http://joshphe.top/2022/01/17/zai-xian-chong-ding-yi/</id>
+    <published>2022-01-17T11:56:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;转载-在线重定义&quot;&gt;&lt;a href=&quot;#转载-在线重定义&quot; class=&quot;headerlink&quot; title=&quot;[转载]在线重定义&quot;&gt;&lt;/a&gt;[转载]在线重定义&lt;/h2&gt;&lt;p&gt;转载：&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="Oracle" scheme="http://joshphe.top/tags/Oracle/"/>
+    
+    <category term="迁移" scheme="http://joshphe.top/tags/%E8%BF%81%E7%A7%BB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL问题记录汇总</title>
+    <link href="http://joshphe.top/2021/09/24/mysql-wen-ti-ji-lu-hui-zong/"/>
+    <id>http://joshphe.top/2021/09/24/mysql-wen-ti-ji-lu-hui-zong/</id>
+    <published>2021-09-24T02:06:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;Mysql-问题记录汇总：&quot;&gt;&lt;a href=&quot;#Mysql-问题记录汇总：&quot; class=&quot;headerlink&quot; title=&quot;Mysql 问题记录汇总：&quot;&gt;&lt;/a&gt;Mysql 问题记录汇总：&lt;/h3&gt;&lt;h4 id=&quot;1、应用疲劳性压测&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="MySQL" scheme="http://joshphe.top/tags/MySQL/"/>
+    
+    <category term="日常" scheme="http://joshphe.top/tags/%E6%97%A5%E5%B8%B8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>人口信息生僻字合法性校验</title>
+    <link href="http://joshphe.top/2021/09/14/ren-kou-xin-xi-sheng-pi-zi-wen-ti/"/>
+    <id>http://joshphe.top/2021/09/14/ren-kou-xin-xi-sheng-pi-zi-wen-ti/</id>
+    <published>2021-09-14T01:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;人口信息生僻字合法性校验&quot;&gt;&lt;a href=&quot;#人口信息生僻字合法性校验&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="GB18030" scheme="http://joshphe.top/tags/GB18030/"/>
+    
+    <category term="生僻字" scheme="http://joshphe.top/tags/%E7%94%9F%E5%83%BB%E5%AD%97/"/>
+    
+    <category term="GBK" scheme="http://joshphe.top/tags/GBK/"/>
+    
+    <category term="Unicode" scheme="http://joshphe.top/tags/Unicode/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Left join未使用索引</title>
+    <link href="http://joshphe.top/2021/05/13/left-join-wei-shi-yong-suo-yin/"/>
+    <id>http://joshphe.top/2021/05/13/left-join-wei-shi-yong-suo-yin/</id>
+    <published>2021-05-13T11:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.607Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Mysql字符集不同导致索引失效&quot;&gt;&lt;a href=&quot;#Mysql字符集不同导致索引失效&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    
+    <category term="left join" scheme="http://joshphe.top/tags/left-join/"/>
+    
+    <category term="索引" scheme="http://joshphe.top/tags/%E7%B4%A2%E5%BC%95/"/>
+    
+    <category term="Mysql" scheme="http://joshphe.top/tags/Mysql/"/>
+    
+    <category term="字符集" scheme="http://joshphe.top/tags/%E5%AD%97%E7%AC%A6%E9%9B%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Log4j 1.x版本高并发引发BLOCKED死锁</title>
+    <link href="http://joshphe.top/2021/05/13/log4j-1.x-ban-ben-gao-bing-fa-si-suo-wen-ti/"/>
+    <id>http://joshphe.top/2021/05/13/log4j-1.x-ban-ben-gao-bing-fa-si-suo-wen-ti/</id>
+    <published>2021-05-13T11:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.607Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2 id=&quot;Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题&quot;&gt;&lt;a href=&quot;#Log4j-1-x版本高并发情况下引发BLOCKED死锁的问题&quot; class=&quot;headerlink&quot; title=&quot;Log4j</summary>
+        
+      
+    
+    
+    
+    
+    <category term="log4j" scheme="http://joshphe.top/tags/log4j/"/>
+    
+    <category term="高并发" scheme="http://joshphe.top/tags/%E9%AB%98%E5%B9%B6%E5%8F%91/"/>
+    
+    <category term="死锁" scheme="http://joshphe.top/tags/%E6%AD%BB%E9%94%81/"/>
+    
+    <category term="BLOCKED" scheme="http://joshphe.top/tags/BLOCKED/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL数据库设计开发规范</title>
+    <link href="http://joshphe.top/2021/01/22/mysql-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/"/>
+    <id>http://joshphe.top/2021/01/22/mysql-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/</id>
+    <published>2021-01-22T12:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;Mysql-数据库设计约束：&quot;&gt;&lt;a href=&quot;#Mysql-数据库设计约束：&quot; class=&quot;headerlink&quot; title=&quot;Mysql 数据库设计约束：&quot;&gt;&lt;/a&gt;Mysql 数据库设计约束：&lt;/h3&gt;&lt;h4 id=&quot;一、建表约束&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="MySQL" scheme="http://joshphe.top/tags/MySQL/"/>
+    
+    <category term="开发规范" scheme="http://joshphe.top/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle数据库日常操作</title>
+    <link href="http://joshphe.top/2021/01/22/oracle-shu-ju-ku-ri-chang-cao-zuo-ji-lu/"/>
+    <id>http://joshphe.top/2021/01/22/oracle-shu-ju-ku-ri-chang-cao-zuo-ji-lu/</id>
+    <published>2021-01-22T11:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Oracle数据库日常操作&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="日常" scheme="http://joshphe.top/tags/%E6%97%A5%E5%B8%B8/"/>
+    
+    <category term="Oracle" scheme="http://joshphe.top/tags/Oracle/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Oracle数据库设计开发规范</title>
+    <link href="http://joshphe.top/2021/01/22/oracle-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/"/>
+    <id>http://joshphe.top/2021/01/22/oracle-shu-ju-ku-she-ji-kai-fa-gui-fan-v1.0/</id>
+    <published>2021-01-22T11:25:00.000Z</published>
+    <updated>2023-03-02T02:09:43.608Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;Oracle-数据库设计约束：&quot;&gt;&lt;a href=&quot;#Oracle-数据库设计约束：&quot; class=&quot;headerlink&quot; title=&quot;Oracle 数据库设计约束：&quot;&gt;&lt;/a&gt;Oracle 数据库设计约束：&lt;/h3&gt;&lt;h4 id=&quot;一、建表约束&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    
+    <category term="开发规范" scheme="http://joshphe.top/tags/%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83/"/>
+    
+    <category term="Oracle" scheme="http://joshphe.top/tags/Oracle/"/>
+    
+  </entry>
+  
+</feed>
